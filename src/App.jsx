@@ -8,38 +8,34 @@ import {
    DATA: IMAGE COLLECTIONS
    ======================================== */
 
-// 5 Images for HOME Page
+// Ensure you have these files in public/images/hero/
 const HOME_HERO_IMAGES = [
-  "/images/hero/Image 1.jpg", // or "/images/hero/image-1.jpg" if you renamed them
+  "/images/hero/Image 1.jpg",
   "/images/hero/Image 2.jpg",
   "/images/hero/Image 3.jpg",
   "/images/hero/Image 4.jpg",
   "/images/hero/Image 5.jpg"
 ];
 
-// 3 Images for ABOUT Page
 const ABOUT_HERO_IMAGES = [
- "/images/hero/Image 1.jpg", // or "/images/hero/image-1.jpg" if you renamed them
+  "/images/hero/Image 1.jpg",
   "/images/hero/Image 2.jpg",
   "/images/hero/Image 3.jpg"
 ];
 
-// 3 Images for PORTFOLIO Page
 const PORTFOLIO_HERO_IMAGES = [
-  "/images/hero/Image 1.jpg", // or "/images/hero/image-1.jpg" if you renamed them
+  "/images/hero/Image 1.jpg",
   "/images/hero/Image 2.jpg",
   "/images/hero/Image 3.jpg"
 ];
 
-// 3 Images for CONTACT Page
 const CONTACT_HERO_IMAGES = [
-  "/images/hero/Image 1.jpg", // or "/images/hero/image-1.jpg" if you renamed them
+  "/images/hero/Image 1.jpg",
   "/images/hero/Image 2.jpg",
   "/images/hero/Image 3.jpg"
 ];
 
-
-// 1. Define your actual images here
+// Portfolio Grid Data
 const PORTFOLIO_PROJECTS = [
   { id: 1, title: "Beach Wedding", category: "Wedding", src: "/images/portfolio/Image 1.jpg" },
   { id: 2, title: "Kandy Portrait", category: "Portrait", src: "/images/portfolio/Image 2.jpg" },
@@ -50,13 +46,13 @@ const PORTFOLIO_PROJECTS = [
 ];   
 
 /* ========================================
-   DATA: CONTENT
+   DATA: CONTENT SECTIONS
    ======================================== */
 
 const DESTINATIONS = [
-  { id: 1, place: "Galle Fort", desc: "Colonial charm meets ocean sunsets.", img: "https://placehold.co/600x400/EFE7DA/3a3a3a?text=Galle+Fort" },
-  { id: 2, place: "Hill Country", desc: "Misty tea gardens and waterfalls.", img: "https://placehold.co/600x400/B3907A/ffffff?text=Nuwara+Eliya" },
-  { id: 3, place: "South Coast", desc: "Golden beaches and coconut groves.", img: "https://placehold.co/600x400/C1B6A3/3a3a3a?text=Mirissa" }
+  { id: 1, place: "Galle Fort", desc: "Colonial charm meets ocean sunsets.", img: "/images/destinations/Image 1.jpg" },
+  { id: 2, place: "Hill Country", desc: "Misty tea gardens and waterfalls.", img: "/images/destinations/Image 2.jpg" },
+  { id: 3, place: "South Coast", desc: "Golden beaches and coconut groves.", img: "/images/destinations/Image 3.jpg" }
 ];
 
 const AESTHETIC = [
@@ -78,12 +74,6 @@ const PACKAGES = [
   { title: "Destination", price: "$4,500", features: ["Multi-Day Coverage", "Pre-Wedding Shoot", "Cinema Film", "Luxury Album", "Travel Included"] }
 ];
 
-const FEATURED_WORK = [
-  { id: 1, title: "Tropical Wedding", category: "Mirissa", img: "https://placehold.co/600x800/EFE7DA/3a3a3a?text=Beach+Wedding" },
-  { id: 2, title: "Royal Heritage", category: "Kandy", img: "https://placehold.co/600x800/B3907A/ffffff?text=Kandy+Shoot" },
-  { id: 3, title: "Urban Editorial", category: "Colombo", img: "https://placehold.co/600x800/C1B6A3/3a3a3a?text=City+Vibe" }
-];
-
 /* ========================================
    UI COMPONENTS
    ======================================== */
@@ -98,11 +88,10 @@ const Button = ({ children, onClick, variant = 'primary', className = '' }) => {
   return <button onClick={onClick} className={`${baseStyle} ${variants[variant]} ${className}`}>{children}</button>;
 };
 
-// --- NEW COMPONENT: Parallax Slideshow ---
+// --- PARALLAX HERO WITH ZOOM (KEN BURNS EFFECT) ---
 const ParallaxHero = ({ images, children, height = "h-screen" }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Shuffle Logic
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -113,21 +102,21 @@ const ParallaxHero = ({ images, children, height = "h-screen" }) => {
   return (
     <header className={`relative ${height} w-full flex items-center justify-center overflow-hidden`}>
       
-      {/* RENDER ALL IMAGES STACKED (For Smooth Transition) */}
+      {/* Stacked Images with Zoom Transition */}
       {images.map((img, index) => (
         <div 
           key={index}
-          className={`absolute inset-0 bg-cover bg-center bg-fixed transition-opacity duration-1000 ease-in-out ${
-            index === currentIndex ? 'opacity-100' : 'opacity-0'
+          className={`absolute inset-0 bg-cover bg-center bg-fixed transition-all duration-[6000ms] ease-in-out transform ${
+            index === currentIndex ? 'opacity-100 scale-110' : 'opacity-0 scale-100'
           }`}
           style={{ backgroundImage: `url('${img}')` }} 
         ></div>
       ))}
 
-      {/* Dark Overlay (Constant) */}
+      {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/50 z-10"></div>
       
-      {/* Content (On Top) */}
+      {/* Content */}
       <div className="relative z-20 w-full px-6">
         {children}
       </div>
@@ -136,7 +125,7 @@ const ParallaxHero = ({ images, children, height = "h-screen" }) => {
 };
 
 /* ========================================
-   HEADER
+   NAVBAR (TRANSPARENT FIX)
    ======================================== */
 
 const Navbar = ({ currentPage, setCurrentPage }) => {
@@ -150,11 +139,9 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Logic: Dark text on scroll, White text on top
+  // Colors
   const textColor = scrolled ? 'text-[#3a3a3a]' : 'text-white';
   const logoColor = scrolled ? 'text-[#B3907A]' : 'text-[#EFE7DA]';
-  
-  // Button Border Color logic
   const btnBorder = scrolled ? 'border-[#3a3a3a] text-[#3a3a3a]' : 'border-white/50 text-white';
 
   return (
@@ -162,7 +149,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ${scrolled ? 'bg-[#F5F5EB]/90 backdrop-blur-md shadow-sm py-4 border-b border-[#3a3a3a]/5' : 'bg-transparent py-8'}`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           
-          {/* Brand */}
+          {/* Logo */}
           <div className="cursor-pointer z-50 group" onClick={() => setCurrentPage('Home')}>
             <h1 className={`font-serif text-2xl font-bold tracking-wider transition-colors ${textColor}`}>
               B&F <span className={`font-sans font-light text-xs tracking-[0.3em] ml-1 transition-colors ${logoColor}`}>STUDIO</span>
@@ -175,15 +162,15 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
               <button
                 key={link}
                 onClick={() => setCurrentPage(link)}
-                // ADDED: outline-none focus:outline-none to kill blue borders
+                // Fix: bg-transparent + outline-none
                 className={`bg-transparent outline-none focus:outline-none relative px-5 py-2 group transition-all duration-500 rounded-full`}
               >
-                {/* HOVER EFFECT: The Glass Pill Background */}
+                {/* Glass Pill Hover */}
                 <span className={`absolute inset-0 bg-[#B3907A] transition-all duration-500 rounded-full 
                   ${currentPage === link ? 'opacity-10 scale-100' : 'opacity-0 scale-90 group-hover:opacity-20 group-hover:scale-100'}`}>
                 </span>
                 
-                {/* TEXT */}
+                {/* Link Text */}
                 <span className={`relative z-10 text-xs font-bold uppercase tracking-widest transition-colors duration-300 
                   ${currentPage === link ? 'text-[#B3907A]' : `${textColor} group-hover:text-[#B3907A]`}`}>
                   {link}
@@ -194,7 +181,6 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             {/* Book Now Button */}
             <button 
               onClick={() => setCurrentPage('Contact')}
-              // ADDED: outline-none focus:outline-none
               className={`bg-transparent outline-none focus:outline-none px-6 py-3 text-[10px] font-bold uppercase tracking-widest border transition-all duration-500 hover:bg-[#B3907A] hover:border-[#B3907A] hover:text-white hover:shadow-lg ${btnBorder}`}
             >
               Book Now
@@ -223,7 +209,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
     </>
   );
 };
- 
+
 const Footer = ({ setCurrentPage }) => (
   <footer className="bg-[#1a1a1a] text-white pt-24 pb-12 border-t border-[#B3907A]/20">
     <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
@@ -265,7 +251,7 @@ const HomePage = ({ setCurrentPage }) => {
   return (
     <div className="animate-fade-in w-full overflow-hidden bg-[#F5F5EB]">
       
-      {/* PARALLAX HERO WITH SLIDESHOW */}
+      {/* HERO */}
       <ParallaxHero images={HOME_HERO_IMAGES}>
         <div className="text-center max-w-5xl mx-auto mt-16">
           <div className="inline-flex items-center gap-3 border border-white/20 bg-white/5 backdrop-blur-sm px-6 py-2 rounded-full mb-8">
@@ -384,7 +370,6 @@ const HomePage = ({ setCurrentPage }) => {
 
 const AboutPage = ({ setCurrentPage }) => (
   <div className="min-h-screen bg-[#F5F5EB] animate-fade-in">
-    {/* PARALLAX HERO FOR ABOUT PAGE */}
     <ParallaxHero images={ABOUT_HERO_IMAGES} height="h-[60vh]">
       <div className="text-center max-w-4xl mx-auto mt-20">
          <span className="text-[#B3907A] text-xs font-bold uppercase tracking-widest block mb-4">Since 2020</span>
@@ -407,42 +392,32 @@ const AboutPage = ({ setCurrentPage }) => (
 
 const PortfolioPage = () => (
   <div className="min-h-screen bg-[#F5F5EB] animate-fade-in">
-    {/* PARALLAX HERO FOR PORTFOLIO PAGE */}
     <ParallaxHero images={PORTFOLIO_HERO_IMAGES} height="h-[60vh]">
        <h1 className="font-serif text-5xl md:text-7xl text-white text-center mt-20">Selected Works</h1>
     </ParallaxHero>
 
     <div className="max-w-7xl mx-auto px-6 py-24">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        {/* UPDATED LOOP: Using the real data now */}
         {PORTFOLIO_PROJECTS.map((project) => (
           <div key={project.id} className="group relative overflow-hidden aspect-[3/4] cursor-pointer bg-gray-200 shadow-lg">
-            
-            {/* UPDATED IMAGE SOURCE */}
             <img 
               src={project.src} 
               alt={project.title} 
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
             />
-            
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
-                {/* Added Category and Title for better look */}
                 <span className="text-[#B3907A] text-xs font-bold uppercase tracking-widest mb-2">{project.category}</span>
                 <span className="text-white font-serif text-2xl">{project.title}</span>
             </div>
           </div>
         ))}
-        
       </div>
     </div>
   </div>
 );
 
-
 const ContactPage = () => (
   <div className="min-h-screen bg-[#F5F5EB] animate-fade-in">
-    {/* PARALLAX HERO FOR CONTACT PAGE */}
     <ParallaxHero images={CONTACT_HERO_IMAGES} height="h-[60vh]">
        <h1 className="font-serif text-5xl md:text-7xl text-white text-center mt-20">Get In Touch</h1>
     </ParallaxHero>
