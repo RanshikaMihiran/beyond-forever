@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>photography-site</title>
+    <style>
+  /* FORCE FULL WIDTH */
+  html, body, #root {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden;
+  }
+</style>
+    <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#F5F5EB',   // Off-white
+          secondary: '#EFE7DA', // Light Cream
+          accent: '#B3907A',    // Warm Brown
+          accentLight: '#C1B6A3', // Taupe
+          subtle: '#E1DACA',    // Light Beige
+          dark: '#3a3a3a',      // Dark Charcoal
+        },
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          serif: ['Playfair Display', 'serif'],
+        }
+      }
+    }
+  }
+</script>
+
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
