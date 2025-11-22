@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Camera, Instagram, Facebook, Mail, Phone, MapPin, X, Menu, 
-  ArrowRight, ChevronDown, Check, Play, Aperture, Heart, Users, Coffee
+  ArrowRight, ChevronDown, Check, Play, Aperture, Heart, Users, Coffee, Calendar
 } from 'lucide-react';
 
 /* ========================================
@@ -88,21 +88,19 @@ const Button = ({ children, onClick, variant = 'primary', className = '' }) => {
   return <button onClick={onClick} className={`${baseStyle} ${variants[variant]} ${className}`}>{children}</button>;
 };
 
-// --- PARALLAX HERO WITH ZOOM (KEN BURNS EFFECT) ---
+// --- PARALLAX HERO WITH ZOOM ---
 const ParallaxHero = ({ images, children, height = "h-screen" }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 5000); // Change image every 5 seconds
+    }, 5000); 
     return () => clearInterval(interval);
   }, [images.length]);
 
   return (
     <header className={`relative ${height} w-full flex items-center justify-center overflow-hidden`}>
-      
-      {/* Stacked Images with Zoom Transition */}
       {images.map((img, index) => (
         <div 
           key={index}
@@ -112,11 +110,7 @@ const ParallaxHero = ({ images, children, height = "h-screen" }) => {
           style={{ backgroundImage: `url('${img}')` }} 
         ></div>
       ))}
-
-      {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/50 z-10"></div>
-      
-      {/* Content */}
       <div className="relative z-20 w-full px-6">
         {children}
       </div>
@@ -124,8 +118,66 @@ const ParallaxHero = ({ images, children, height = "h-screen" }) => {
   );
 };
 
+// --- NEW: FALLING MEMORIES SECTION ---
+const FallingMemories = () => {
+  // We duplicate the project list to have enough items falling
+  const fallingItems = [...PORTFOLIO_PROJECTS, ...PORTFOLIO_PROJECTS].slice(0, 8);
+
+  return (
+    <section className="relative h-[80vh] bg-[#EFE7DA] overflow-hidden flex items-center justify-center">
+      {/* Background Text */}
+      <div className="absolute z-10 text-center pointer-events-none select-none">
+        <h2 className="font-serif text-5xl md:text-8xl text-[#3a3a3a] opacity-5 uppercase tracking-widest">
+          Timeless<br/>Moments
+        </h2>
+      </div>
+
+      {/* Falling Container */}
+      <div className="absolute inset-0 pointer-events-none">
+        {fallingItems.map((item, index) => {
+          // Generate random values for natural feel
+          const leftPos = Math.floor(Math.random() * 90); // Random horizontal position
+          const duration = 10 + Math.random() * 10; // Random speed (10s - 20s)
+          const delay = -Math.random() * 20; // Start at different times
+          const rotate = Math.random() * 20 - 10; // Random rotation
+
+          return (
+            <div 
+              key={index}
+              className="absolute top-[-20%] w-40 md:w-56 bg-white p-3 shadow-xl transform hover:scale-110 transition-transform z-20"
+              style={{
+                left: `${leftPos}%`,
+                animation: `fall ${duration}s linear infinite`,
+                animationDelay: `${delay}s`,
+                transform: `rotate(${rotate}deg)`
+              }}
+            >
+              <div className="aspect-[3/4] overflow-hidden bg-gray-100 mb-3">
+                <img src={item.src} alt="Memory" className="w-full h-full object-cover" />
+              </div>
+              <div className="text-center">
+                <p className="font-serif text-[#3a3a3a] text-xs italic">{item.title}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* CSS for Falling Animation */}
+      <style>{`
+        @keyframes fall {
+          0% { transform: translateY(-50vh) rotate(-10deg); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateY(120vh) rotate(10deg); opacity: 0; }
+        }
+      `}</style>
+    </section>
+  );
+};
+
 /* ========================================
-   NAVBAR (TRANSPARENT FIX)
+   NAVBAR
    ======================================== */
 
 const Navbar = ({ currentPage, setCurrentPage }) => {
@@ -139,7 +191,6 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Colors
   const textColor = scrolled ? 'text-[#3a3a3a]' : 'text-white';
   const logoColor = scrolled ? 'text-[#B3907A]' : 'text-[#EFE7DA]';
   const btnBorder = scrolled ? 'border-[#3a3a3a] text-[#3a3a3a]' : 'border-white/50 text-white';
@@ -148,37 +199,28 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
     <>
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ${scrolled ? 'bg-[#F5F5EB]/90 backdrop-blur-md shadow-sm py-4 border-b border-[#3a3a3a]/5' : 'bg-transparent py-8'}`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          
-          {/* Logo */}
           <div className="cursor-pointer z-50 group" onClick={() => setCurrentPage('Home')}>
             <h1 className={`font-serif text-2xl font-bold tracking-wider transition-colors ${textColor}`}>
               B&F <span className={`font-sans font-light text-xs tracking-[0.3em] ml-1 transition-colors ${logoColor}`}>STUDIO</span>
             </h1>
           </div>
 
-          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
               <button
                 key={link}
                 onClick={() => setCurrentPage(link)}
-                // Fix: bg-transparent + outline-none
                 className={`bg-transparent outline-none focus:outline-none relative px-5 py-2 group transition-all duration-500 rounded-full`}
               >
-                {/* Glass Pill Hover */}
                 <span className={`absolute inset-0 bg-[#B3907A] transition-all duration-500 rounded-full 
                   ${currentPage === link ? 'opacity-10 scale-100' : 'opacity-0 scale-90 group-hover:opacity-20 group-hover:scale-100'}`}>
                 </span>
-                
-                {/* Link Text */}
                 <span className={`relative z-10 text-xs font-bold uppercase tracking-widest transition-colors duration-300 
                   ${currentPage === link ? 'text-[#B3907A]' : `${textColor} group-hover:text-[#B3907A]`}`}>
                   {link}
                 </span>
               </button>
             ))}
-            
-            {/* Book Now Button */}
             <button 
               onClick={() => setCurrentPage('Contact')}
               className={`bg-transparent outline-none focus:outline-none px-6 py-3 text-[10px] font-bold uppercase tracking-widest border transition-all duration-500 hover:bg-[#B3907A] hover:border-[#B3907A] hover:text-white hover:shadow-lg ${btnBorder}`}
@@ -187,14 +229,12 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             </button>
           </div>
 
-          {/* Mobile Toggle */}
           <button onClick={() => setMenuOpen(!menuOpen)} className={`md:hidden z-50 bg-transparent outline-none focus:outline-none transition-colors ${menuOpen ? 'text-[#3a3a3a]' : textColor}`}>
             {menuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </nav>
       
-      {/* Mobile Menu Overlay */}
       {menuOpen && (
         <div className={`fixed inset-0 bg-[#F5F5EB] z-40 flex flex-col justify-center items-center animate-fade-in`}>
           <div className="flex flex-col space-y-8 text-center">
@@ -293,6 +333,9 @@ const HomePage = ({ setCurrentPage }) => {
             </div>
          </div>
       </section>
+
+      {/* FALLING MEMORIES SECTION (NEW) */}
+      <FallingMemories />
 
       {/* STATS */}
       <section className="py-20 bg-[#3a3a3a] text-[#F5F5EB]">
@@ -416,34 +459,126 @@ const PortfolioPage = () => (
   </div>
 );
 
-const ContactPage = () => (
-  <div className="min-h-screen bg-[#F5F5EB] animate-fade-in">
-    <ParallaxHero images={CONTACT_HERO_IMAGES} height="h-[60vh]">
-       <h1 className="font-serif text-5xl md:text-7xl text-white text-center mt-20">Get In Touch</h1>
-    </ParallaxHero>
+const ContactPage = () => {
+  const [selectedService, setSelectedService] = useState('');
 
-    <div className="max-w-6xl mx-auto px-6 py-24">
-      <div className="bg-white shadow-2xl grid grid-cols-1 lg:grid-cols-2">
-        <div className="bg-[#3a3a3a] text-white p-12 md:p-16 flex flex-col justify-center">
-             <h2 className="font-serif text-4xl mb-6">Let's Talk</h2>
-             <p className="opacity-70 mb-10 leading-relaxed">We accept a limited number of weddings each year.</p>
-             <div className="space-y-6">
-               <div className="flex items-start gap-4"><Phone className="text-[#B3907A]"/> <div><p className="text-[#E1DACA]">+94 77 123 4567</p></div></div>
-               <div className="flex items-start gap-4"><Mail className="text-[#B3907A]"/> <div><p className="text-[#E1DACA]">hello@beyond.lk</p></div></div>
+  const services = ["Wedding", "Elopement", "Engagement", "Portrait", "Fashion", "Event"];
+
+  return (
+    <div className="min-h-screen bg-[#F5F5EB] animate-fade-in">
+      {/* PARALLAX HERO FOR CONTACT PAGE */}
+      <ParallaxHero images={CONTACT_HERO_IMAGES} height="h-[60vh]">
+         <h1 className="font-serif text-5xl md:text-7xl text-white text-center mt-20">Start The Conversation</h1>
+      </ParallaxHero>
+
+      <div className="max-w-7xl mx-auto px-6 py-24">
+        <div className="bg-white shadow-2xl grid grid-cols-1 lg:grid-cols-5">
+          {/* Left Side - Dark - 2 cols */}
+          <div className="lg:col-span-2 bg-[#3a3a3a] text-white p-12 md:p-16 flex flex-col justify-between relative overflow-hidden">
+             <div className="relative z-10">
+               <h2 className="font-serif text-4xl mb-6">Get in Touch</h2>
+               <p className="opacity-70 mb-12 leading-relaxed">
+                  We take on a limited number of weddings each year to ensure every couple receives our full creative attention.
+               </p>
+               <div className="space-y-8">
+                 <div className="flex items-start gap-4 group">
+                   <div className="p-3 bg-white/5 rounded-full group-hover:bg-[#B3907A] transition-colors">
+                     <Phone className="text-white w-5 h-5"/> 
+                   </div>
+                   <div>
+                     <h5 className="font-bold text-xs uppercase tracking-widest mb-1 text-[#B3907A]">Phone</h5>
+                     <p className="text-[#E1DACA] font-light">+94 77 123 4567</p>
+                   </div>
+                 </div>
+                 <div className="flex items-start gap-4 group">
+                   <div className="p-3 bg-white/5 rounded-full group-hover:bg-[#B3907A] transition-colors">
+                     <Mail className="text-white w-5 h-5"/> 
+                   </div>
+                   <div>
+                     <h5 className="font-bold text-xs uppercase tracking-widest mb-1 text-[#B3907A]">Email</h5>
+                     <p className="text-[#E1DACA] font-light">hello@beyond.lk</p>
+                   </div>
+                 </div>
+                 <div className="flex items-start gap-4 group">
+                   <div className="p-3 bg-white/5 rounded-full group-hover:bg-[#B3907A] transition-colors">
+                     <MapPin className="text-white w-5 h-5"/> 
+                   </div>
+                   <div>
+                     <h5 className="font-bold text-xs uppercase tracking-widest mb-1 text-[#B3907A]">Studio</h5>
+                     <p className="text-[#E1DACA] font-light">123 Galle Road, Colombo 03</p>
+                   </div>
+                 </div>
+               </div>
              </div>
-        </div>
-        <div className="p-12 md:p-16 bg-white">
-          <form className="space-y-6" onSubmit={e => e.preventDefault()}>
-            <input type="text" placeholder="Full Name" className="w-full bg-[#F5F5EB] p-4 border-b-2 border-transparent focus:border-[#B3907A] outline-none text-[#3a3a3a]" />
-            <input type="email" placeholder="Email" className="w-full bg-[#F5F5EB] p-4 border-b-2 border-transparent focus:border-[#B3907A] outline-none text-[#3a3a3a]" />
-            <textarea placeholder="Message" rows="4" className="w-full bg-[#F5F5EB] p-4 border-b-2 border-transparent focus:border-[#B3907A] outline-none text-[#3a3a3a]"></textarea>
-            <Button variant="dark" className="w-full">Send Message</Button>
-          </form>
+             
+             {/* Decorative Circle */}
+             <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-[#B3907A] rounded-full opacity-20 blur-3xl"></div>
+          </div>
+
+          {/* Right Side - Light - 3 cols */}
+          <div className="lg:col-span-3 p-12 md:p-16 bg-white">
+             <div className="mb-10">
+                <h3 className="font-serif text-3xl text-[#3a3a3a] mb-2">Tell us about your vision</h3>
+                <p className="text-[#3a3a3a]/60 text-sm">We'd love to hear your story. Fill out the details below.</p>
+             </div>
+
+             <form className="space-y-8" onSubmit={e => e.preventDefault()}>
+                {/* Service Selection Chips */}
+                <div>
+                   <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-4">What are you looking for?</label>
+                   <div className="flex flex-wrap gap-3">
+                      {services.map(service => (
+                         <button
+                            key={service}
+                            type="button"
+                            onClick={() => setSelectedService(service)}
+                            className={`px-6 py-3 text-[10px] font-bold uppercase tracking-widest border transition-all duration-300 rounded-sm ${
+                               selectedService === service 
+                               ? 'bg-[#3a3a3a] border-[#3a3a3a] text-white shadow-md transform -translate-y-1' 
+                               : 'bg-transparent border-[#3a3a3a]/20 text-[#3a3a3a]/70 hover:border-[#B3907A] hover:text-[#B3907A]'
+                            }`}
+                         >
+                            {service}
+                         </button>
+                      ))}
+                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                   <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Full Name</label>
+                      <input type="text" required className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none transition-colors text-[#3a3a3a]" placeholder="John Doe" />
+                   </div>
+                   <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Email Address</label>
+                      <input type="email" required className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none transition-colors text-[#3a3a3a]" placeholder="hello@example.com" />
+                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                   <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Event Date (Approx)</label>
+                      <input type="date" className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none transition-colors text-[#3a3a3a]" />
+                   </div>
+                   <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Event Location</label>
+                      <input type="text" className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none transition-colors text-[#3a3a3a]" placeholder="City, Venue, or Country" />
+                   </div>
+                </div>
+
+                <div>
+                   <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Your Message</label>
+                   <textarea rows="4" className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none transition-colors text-[#3a3a3a] resize-none" placeholder="Tell us more about you two, your vision, and any specific details..."></textarea>
+                </div>
+
+                <Button variant="dark" className="w-full md:w-auto mt-4">Send Inquiry</Button>
+             </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 /* ========================================
    MAIN APP
