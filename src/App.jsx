@@ -74,6 +74,22 @@ const PACKAGES = [
   { title: "Destination", price: "$4,500", features: ["Multi-Day Coverage", "Pre-Wedding Shoot", "Cinema Film", "Luxury Album", "Travel Included"] }
 ];
 
+
+// Images specifically for the falling section (Polaroid style)
+const FALLING_GALLERY = [
+  { src: "/images/portfolio/Image 1.jpg", label: "The Beginning" },
+  { src: "/images/portfolio/Image 2.jpg", label: "Pure Joy" },
+  { src: "/images/portfolio/Image 3.jpg", label: "Details" },
+  { src: "/images/portfolio/Image 4.jpg", label: "Forever" },
+  { src: "/images/portfolio/Image 5.jpg", label: "Quiet Moments" },
+  { src: "/images/portfolio/Image 6.jpg", label: "Celebration" },
+  // You can repeat images or add new ones here to increase density
+  { src: "/images/portfolio/Image 1.jpg", label: "Us" },
+  { src: "/images/portfolio/Image 3.jpg", label: "Laughter" },
+  { src: "/images/portfolio/Image 2.jpg", label: "Memories" },
+  { src: "/images/portfolio/Image 4.jpg", label: "Love" },
+];
+
 /* ========================================
    UI COMPONENTS
    ======================================== */
@@ -118,64 +134,92 @@ const ParallaxHero = ({ images, children, height = "h-screen" }) => {
   );
 };
 
-// --- NEW: FALLING MEMORIES SECTION ---
+// --- UPGRADED: FALLING MEMORIES SECTION ---
 const FallingMemories = () => {
-  // We duplicate the project list to have enough items falling
-  const fallingItems = [...PORTFOLIO_PROJECTS, ...PORTFOLIO_PROJECTS].slice(0, 8);
+  // Create a larger pool of items for a "fuller" look (20 items total)
+  const items = [...FALLING_GALLERY, ...FALLING_GALLERY]; 
 
   return (
-    <section className="relative h-[80vh] bg-[#EFE7DA] overflow-hidden flex items-center justify-center">
-      {/* Background Text */}
-      <div className="absolute z-10 text-center pointer-events-none select-none">
-        <h2 className="font-serif text-5xl md:text-8xl text-[#3a3a3a] opacity-5 uppercase tracking-widest">
-          Timeless<br/>Moments
+    <section className="relative h-[100vh] bg-[#EFE7DA] overflow-hidden flex items-center justify-center">
+      
+      {/* Background Text (Subtle Watermark) */}
+      <div className="absolute z-0 text-center pointer-events-none select-none">
+        <h2 className="font-serif text-6xl md:text-9xl text-[#3a3a3a] opacity-[0.03] uppercase tracking-[0.5em] leading-tight">
+          Captured<br/>In Time
         </h2>
       </div>
 
       {/* Falling Container */}
-      <div className="absolute inset-0 pointer-events-none">
-        {fallingItems.map((item, index) => {
-          // Generate random values for natural feel
-          const leftPos = Math.floor(Math.random() * 90); // Random horizontal position
-          const duration = 10 + Math.random() * 10; // Random speed (10s - 20s)
-          const delay = -Math.random() * 20; // Start at different times
-          const rotate = Math.random() * 20 - 10; // Random rotation
+      <div className="absolute inset-0 pointer-events-none z-10">
+        {items.map((item, index) => {
+          // 1. Randomize Horizontal Position (0% to 100%)
+          const left = Math.floor(Math.random() * 100);
+          
+          // 2. Randomize Speed (Slower is more elegant: 15s to 35s)
+          const duration = 15 + Math.random() * 20; 
+          
+          // 3. Randomize Delay (Start at different times)
+          const delay = -(Math.random() * 30); 
+          
+          // 4. Randomize Scale (0.6 to 1.1) for "Depth" effect
+          const scale = 0.6 + Math.random() * 0.5;
+          
+          // 5. Blur items that are "smaller/further away"
+          const blurClass = scale < 0.8 ? 'blur-[1px] opacity-60' : 'opacity-90';
 
           return (
             <div 
               key={index}
-              className="absolute top-[-20%] w-40 md:w-56 bg-white p-3 shadow-xl transform hover:scale-110 transition-transform z-20"
+              className={`absolute top-[-300px] w-48 md:w-64 bg-white p-3 md:p-4 shadow-2xl transform will-change-transform ${blurClass}`}
               style={{
-                left: `${leftPos}%`,
-                animation: `fall ${duration}s linear infinite`,
+                left: `${left}%`,
+                // Use a complex sway animation
+                animation: `fall-sway ${duration}s linear infinite`,
                 animationDelay: `${delay}s`,
-                transform: `rotate(${rotate}deg)`
+                // Set size based on random scale
+                transform: `scale(${scale})`
               }}
             >
-              <div className="aspect-[3/4] overflow-hidden bg-gray-100 mb-3">
-                <img src={item.src} alt="Memory" className="w-full h-full object-cover" />
+              {/* Polaroid Image Area */}
+              <div className="aspect-[4/5] overflow-hidden bg-gray-100 mb-4 relative">
+                <img src={item.src} alt="Memory" className="w-full h-full object-cover grayscale-[30%] contrast-110" />
+                {/* Subtle inner shadow/vintage tint */}
+                <div className="absolute inset-0 bg-[#3a3a3a]/5 mix-blend-multiply"></div> 
               </div>
+              
+              {/* Handwriting Label */}
               <div className="text-center">
-                <p className="font-serif text-[#3a3a3a] text-xs italic">{item.title}</p>
+                <p className="font-serif text-[#3a3a3a] text-xs md:text-sm italic tracking-widest opacity-70" 
+                   style={{ transform: `rotate(${Math.random() * 4 - 2}deg)` }}>
+                   {item.label}
+                </p>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* CSS for Falling Animation */}
+      {/* CSS for Swaying Animation */}
       <style>{`
-        @keyframes fall {
-          0% { transform: translateY(-50vh) rotate(-10deg); opacity: 0; }
+        @keyframes fall-sway {
+          0% { 
+            transform: translateY(-300px) rotate(-5deg) translateX(-20px) scale(var(--tw-scale-x)); 
+            opacity: 0; 
+          }
           10% { opacity: 1; }
+          50% { 
+            transform: translateY(50vh) rotate(5deg) translateX(20px) scale(var(--tw-scale-x)); 
+          }
           90% { opacity: 1; }
-          100% { transform: translateY(120vh) rotate(10deg); opacity: 0; }
+          100% { 
+            transform: translateY(110vh) rotate(-5deg) translateX(-20px) scale(var(--tw-scale-x)); 
+            opacity: 0; 
+          }
         }
       `}</style>
     </section>
   );
 };
-
 /* ========================================
    NAVBAR
    ======================================== */
