@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Camera, Instagram, Facebook, Mail, Phone, MapPin, X, Menu, 
-  ArrowRight, ChevronDown, Check, Play, Aperture, Heart, Users, Coffee, Calendar
+  ArrowRight, ChevronDown, Check, Play, Aperture, Heart, Users, Coffee, Calendar,
+  MessageCircle, Send, ExternalLink
 } from 'lucide-react';
 
 /* ========================================
    DATA: IMAGE COLLECTIONS
    ======================================== */
 
-// Ensure you have these files in public/images/hero/
 const HOME_HERO_IMAGES = [
   "/images/hero/Image 1.jpg",
   "/images/hero/Image 2.jpg",
@@ -35,7 +35,7 @@ const CONTACT_HERO_IMAGES = [
   "/images/hero/Image 3.jpg"
 ];
 
-// Portfolio Grid Data
+// Main Portfolio Grid
 const PORTFOLIO_PROJECTS = [
   { id: 1, title: "Beach Wedding", category: "Wedding", src: "/images/portfolio/Image 1.jpg" },
   { id: 2, title: "Kandy Portrait", category: "Portrait", src: "/images/portfolio/Image 2.jpg" },
@@ -43,7 +43,21 @@ const PORTFOLIO_PROJECTS = [
   { id: 4, title: "Sunset Couple", category: "Wedding", src: "/images/portfolio/Image 4.jpg" },
   { id: 5, title: "Studio Session", category: "Portrait", src: "/images/portfolio/Image 5.jpg" },
   { id: 6, title: "Traditional", category: "Event",    src: "/images/portfolio/Image 6.jpg" },
-];   
+];
+
+// Images specifically for the falling section (Polaroid style)
+const FALLING_GALLERY = [
+  { src: "/images/portfolio/Image 1.jpg", label: "The Beginning" },
+  { src: "/images/portfolio/Image 2.jpg", label: "Pure Joy" },
+  { src: "/images/portfolio/Image 3.jpg", label: "Details" },
+  { src: "/images/portfolio/Image 4.jpg", label: "Forever" },
+  { src: "/images/portfolio/Image 5.jpg", label: "Quiet Moments" },
+  { src: "/images/portfolio/Image 6.jpg", label: "Celebration" },
+  { src: "/images/portfolio/Image 1.jpg", label: "Us" },
+  { src: "/images/portfolio/Image 3.jpg", label: "Laughter" },
+  { src: "/images/portfolio/Image 2.jpg", label: "Memories" },
+  { src: "/images/portfolio/Image 4.jpg", label: "Love" },
+];
 
 /* ========================================
    DATA: CONTENT SECTIONS
@@ -74,28 +88,12 @@ const PACKAGES = [
   { title: "Destination", price: "$4,500", features: ["Multi-Day Coverage", "Pre-Wedding Shoot", "Cinema Film", "Luxury Album", "Travel Included"] }
 ];
 
-
-// Images specifically for the falling section (Polaroid style)
-const FALLING_GALLERY = [
-  { src: "/images/portfolio/Image 1.jpg", label: "The Beginning" },
-  { src: "/images/portfolio/Image 2.jpg", label: "Pure Joy" },
-  { src: "/images/portfolio/Image 3.jpg", label: "Details" },
-  { src: "/images/portfolio/Image 4.jpg", label: "Forever" },
-  { src: "/images/portfolio/Image 5.jpg", label: "Quiet Moments" },
-  { src: "/images/portfolio/Image 6.jpg", label: "Celebration" },
-  // You can repeat images or add new ones here to increase density
-  { src: "/images/portfolio/Image 1.jpg", label: "Us" },
-  { src: "/images/portfolio/Image 3.jpg", label: "Laughter" },
-  { src: "/images/portfolio/Image 2.jpg", label: "Memories" },
-  { src: "/images/portfolio/Image 4.jpg", label: "Love" },
-];
-
 /* ========================================
    UI COMPONENTS
    ======================================== */
 
 const Button = ({ children, onClick, variant = 'primary', className = '' }) => {
-  const baseStyle = "px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 ease-out transform hover:-translate-y-1 shadow-lg backdrop-blur-sm inline-flex items-center justify-center gap-2 border";
+  const baseStyle = "px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 ease-out transform hover:-translate-y-1 shadow-lg backdrop-blur-sm inline-flex items-center justify-center gap-2 border outline-none focus:outline-none";
   const variants = {
     primary: "bg-[#B3907A]/90 text-white border-transparent hover:bg-[#3a3a3a] hover:shadow-xl", 
     outline: "bg-transparent border-white text-white hover:bg-white hover:text-[#3a3a3a]",
@@ -104,7 +102,7 @@ const Button = ({ children, onClick, variant = 'primary', className = '' }) => {
   return <button onClick={onClick} className={`${baseStyle} ${variants[variant]} ${className}`}>{children}</button>;
 };
 
-// --- PARALLAX HERO WITH ZOOM ---
+// --- PARALLAX HERO WITH KEN BURNS ZOOM ---
 const ParallaxHero = ({ images, children, height = "h-screen" }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -134,15 +132,13 @@ const ParallaxHero = ({ images, children, height = "h-screen" }) => {
   );
 };
 
-// --- UPGRADED: FALLING MEMORIES SECTION ---
+// --- FALLING MEMORIES (POLAROID STYLE WITH SWAY) ---
 const FallingMemories = () => {
-  // Create a larger pool of items for a "fuller" look (20 items total)
-  const items = [...FALLING_GALLERY, ...FALLING_GALLERY]; 
+  const items = [...FALLING_GALLERY, ...FALLING_GALLERY]; // Double up for density
 
   return (
     <section className="relative h-[100vh] bg-[#EFE7DA] overflow-hidden flex items-center justify-center">
-      
-      {/* Background Text (Subtle Watermark) */}
+      {/* Background Text */}
       <div className="absolute z-0 text-center pointer-events-none select-none">
         <h2 className="font-serif text-6xl md:text-9xl text-[#3a3a3a] opacity-[0.03] uppercase tracking-[0.5em] leading-tight">
           Captured<br/>In Time
@@ -152,19 +148,10 @@ const FallingMemories = () => {
       {/* Falling Container */}
       <div className="absolute inset-0 pointer-events-none z-10">
         {items.map((item, index) => {
-          // 1. Randomize Horizontal Position (0% to 100%)
           const left = Math.floor(Math.random() * 100);
-          
-          // 2. Randomize Speed (Slower is more elegant: 15s to 35s)
           const duration = 15 + Math.random() * 20; 
-          
-          // 3. Randomize Delay (Start at different times)
           const delay = -(Math.random() * 30); 
-          
-          // 4. Randomize Scale (0.6 to 1.1) for "Depth" effect
           const scale = 0.6 + Math.random() * 0.5;
-          
-          // 5. Blur items that are "smaller/further away"
           const blurClass = scale < 0.8 ? 'blur-[1px] opacity-60' : 'opacity-90';
 
           return (
@@ -173,21 +160,15 @@ const FallingMemories = () => {
               className={`absolute top-[-300px] w-48 md:w-64 bg-white p-3 md:p-4 shadow-2xl transform will-change-transform ${blurClass}`}
               style={{
                 left: `${left}%`,
-                // Use a complex sway animation
                 animation: `fall-sway ${duration}s linear infinite`,
                 animationDelay: `${delay}s`,
-                // Set size based on random scale
                 transform: `scale(${scale})`
               }}
             >
-              {/* Polaroid Image Area */}
               <div className="aspect-[4/5] overflow-hidden bg-gray-100 mb-4 relative">
                 <img src={item.src} alt="Memory" className="w-full h-full object-cover grayscale-[30%] contrast-110" />
-                {/* Subtle inner shadow/vintage tint */}
                 <div className="absolute inset-0 bg-[#3a3a3a]/5 mix-blend-multiply"></div> 
               </div>
-              
-              {/* Handwriting Label */}
               <div className="text-center">
                 <p className="font-serif text-[#3a3a3a] text-xs md:text-sm italic tracking-widest opacity-70" 
                    style={{ transform: `rotate(${Math.random() * 4 - 2}deg)` }}>
@@ -199,31 +180,20 @@ const FallingMemories = () => {
         })}
       </div>
 
-      {/* CSS for Swaying Animation */}
       <style>{`
         @keyframes fall-sway {
-          0% { 
-            transform: translateY(-300px) rotate(-5deg) translateX(-20px) scale(var(--tw-scale-x)); 
-            opacity: 0; 
-          }
+          0% { transform: translateY(-300px) rotate(-5deg) translateX(-20px) scale(var(--tw-scale-x)); opacity: 0; }
           10% { opacity: 1; }
-          50% { 
-            transform: translateY(50vh) rotate(5deg) translateX(20px) scale(var(--tw-scale-x)); 
-          }
+          50% { transform: translateY(50vh) rotate(5deg) translateX(20px) scale(var(--tw-scale-x)); }
           90% { opacity: 1; }
-          100% { 
-            transform: translateY(110vh) rotate(-5deg) translateX(-20px) scale(var(--tw-scale-x)); 
-            opacity: 0; 
-          }
+          100% { transform: translateY(110vh) rotate(-5deg) translateX(-20px) scale(var(--tw-scale-x)); opacity: 0; }
         }
       `}</style>
     </section>
   );
 };
-/* ========================================
-   NAVBAR
-   ======================================== */
 
+// --- NAVBAR ---
 const Navbar = ({ currentPage, setCurrentPage }) => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -243,6 +213,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
     <>
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ${scrolled ? 'bg-[#F5F5EB]/90 backdrop-blur-md shadow-sm py-4 border-b border-[#3a3a3a]/5' : 'bg-transparent py-8'}`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+          
           <div className="cursor-pointer z-50 group" onClick={() => setCurrentPage('Home')}>
             <h1 className={`font-serif text-2xl font-bold tracking-wider transition-colors ${textColor}`}>
               B&F <span className={`font-sans font-light text-xs tracking-[0.3em] ml-1 transition-colors ${logoColor}`}>STUDIO</span>
@@ -335,7 +306,6 @@ const HomePage = ({ setCurrentPage }) => {
   return (
     <div className="animate-fade-in w-full overflow-hidden bg-[#F5F5EB]">
       
-      {/* HERO */}
       <ParallaxHero images={HOME_HERO_IMAGES}>
         <div className="text-center max-w-5xl mx-auto mt-16">
           <div className="inline-flex items-center gap-3 border border-white/20 bg-white/5 backdrop-blur-sm px-6 py-2 rounded-full mb-8">
@@ -359,7 +329,6 @@ const HomePage = ({ setCurrentPage }) => {
         </div>
       </ParallaxHero>
 
-      {/* AESTHETIC */}
       <section className="py-24 px-6 relative">
          <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -378,10 +347,8 @@ const HomePage = ({ setCurrentPage }) => {
          </div>
       </section>
 
-      {/* FALLING MEMORIES SECTION (NEW) */}
       <FallingMemories />
 
-      {/* STATS */}
       <section className="py-20 bg-[#3a3a3a] text-[#F5F5EB]">
          <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
             {STATS.map((stat, idx) => (
@@ -394,7 +361,6 @@ const HomePage = ({ setCurrentPage }) => {
          </div>
       </section>
 
-      {/* PACKAGES */}
       <section className="py-24 px-6 bg-[#F5F5EB]">
          <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -419,7 +385,6 @@ const HomePage = ({ setCurrentPage }) => {
          </div>
       </section>
 
-      {/* DESTINATIONS */}
       <section className="py-24 px-6 bg-white">
          <div className="max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row items-center justify-between mb-16">
@@ -443,7 +408,6 @@ const HomePage = ({ setCurrentPage }) => {
          </div>
       </section>
 
-      {/* CTA */}
       <section className="py-32 bg-[#3a3a3a] text-center px-6">
         <div className="max-w-3xl mx-auto">
            <h2 className="font-serif text-5xl md:text-7xl text-white mb-8">Let's Create Magic</h2>
@@ -505,19 +469,18 @@ const PortfolioPage = () => (
 
 const ContactPage = () => {
   const [selectedService, setSelectedService] = useState('');
-
   const services = ["Wedding", "Elopement", "Engagement", "Portrait", "Fashion", "Event"];
 
   return (
     <div className="min-h-screen bg-[#F5F5EB] animate-fade-in">
-      {/* PARALLAX HERO FOR CONTACT PAGE */}
       <ParallaxHero images={CONTACT_HERO_IMAGES} height="h-[60vh]">
          <h1 className="font-serif text-5xl md:text-7xl text-white text-center mt-20">Start The Conversation</h1>
       </ParallaxHero>
 
       <div className="max-w-7xl mx-auto px-6 py-24">
         <div className="bg-white shadow-2xl grid grid-cols-1 lg:grid-cols-5">
-          {/* Left Side - Dark - 2 cols */}
+          
+          {/* Info Column */}
           <div className="lg:col-span-2 bg-[#3a3a3a] text-white p-12 md:p-16 flex flex-col justify-between relative overflow-hidden">
              <div className="relative z-10">
                <h2 className="font-serif text-4xl mb-6">Get in Touch</h2>
@@ -526,48 +489,25 @@ const ContactPage = () => {
                </p>
                <div className="space-y-8">
                  <div className="flex items-start gap-4 group">
-                   <div className="p-3 bg-white/5 rounded-full group-hover:bg-[#B3907A] transition-colors">
-                     <Phone className="text-white w-5 h-5"/> 
-                   </div>
-                   <div>
-                     <h5 className="font-bold text-xs uppercase tracking-widest mb-1 text-[#B3907A]">Phone</h5>
-                     <p className="text-[#E1DACA] font-light">+94 77 123 4567</p>
-                   </div>
+                   <div className="p-3 bg-white/5 rounded-full group-hover:bg-[#B3907A] transition-colors"><Phone className="text-white w-5 h-5"/></div>
+                   <div><h5 className="font-bold text-xs uppercase tracking-widest mb-1 text-[#B3907A]">Phone</h5><p className="text-[#E1DACA] font-light">+94 77 123 4567</p></div>
                  </div>
                  <div className="flex items-start gap-4 group">
-                   <div className="p-3 bg-white/5 rounded-full group-hover:bg-[#B3907A] transition-colors">
-                     <Mail className="text-white w-5 h-5"/> 
-                   </div>
-                   <div>
-                     <h5 className="font-bold text-xs uppercase tracking-widest mb-1 text-[#B3907A]">Email</h5>
-                     <p className="text-[#E1DACA] font-light">hello@beyond.lk</p>
-                   </div>
+                   <div className="p-3 bg-white/5 rounded-full group-hover:bg-[#B3907A] transition-colors"><Mail className="text-white w-5 h-5"/></div>
+                   <div><h5 className="font-bold text-xs uppercase tracking-widest mb-1 text-[#B3907A]">Email</h5><p className="text-[#E1DACA] font-light">hello@beyond.lk</p></div>
                  </div>
                  <div className="flex items-start gap-4 group">
-                   <div className="p-3 bg-white/5 rounded-full group-hover:bg-[#B3907A] transition-colors">
-                     <MapPin className="text-white w-5 h-5"/> 
-                   </div>
-                   <div>
-                     <h5 className="font-bold text-xs uppercase tracking-widest mb-1 text-[#B3907A]">Studio</h5>
-                     <p className="text-[#E1DACA] font-light">123 Galle Road, Colombo 03</p>
-                   </div>
+                   <div className="p-3 bg-white/5 rounded-full group-hover:bg-[#B3907A] transition-colors"><MapPin className="text-white w-5 h-5"/></div>
+                   <div><h5 className="font-bold text-xs uppercase tracking-widest mb-1 text-[#B3907A]">Studio</h5><p className="text-[#E1DACA] font-light">123 Galle Road, Colombo 03</p></div>
                  </div>
                </div>
              </div>
-             
-             {/* Decorative Circle */}
              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-[#B3907A] rounded-full opacity-20 blur-3xl"></div>
           </div>
 
-          {/* Right Side - Light - 3 cols */}
+          {/* Form Column */}
           <div className="lg:col-span-3 p-12 md:p-16 bg-white">
-             <div className="mb-10">
-                <h3 className="font-serif text-3xl text-[#3a3a3a] mb-2">Tell us about your vision</h3>
-                <p className="text-[#3a3a3a]/60 text-sm">We'd love to hear your story. Fill out the details below.</p>
-             </div>
-
              <form className="space-y-8" onSubmit={e => e.preventDefault()}>
-                {/* Service Selection Chips */}
                 <div>
                    <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-4">What are you looking for?</label>
                    <div className="flex flex-wrap gap-3">
@@ -589,31 +529,16 @@ const ContactPage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                   <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Full Name</label>
-                      <input type="text" required className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none transition-colors text-[#3a3a3a]" placeholder="John Doe" />
-                   </div>
-                   <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Email Address</label>
-                      <input type="email" required className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none transition-colors text-[#3a3a3a]" placeholder="hello@example.com" />
-                   </div>
+                   <div><label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Full Name</label><input type="text" required className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none text-[#3a3a3a]" placeholder="John Doe" /></div>
+                   <div><label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Email Address</label><input type="email" required className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none text-[#3a3a3a]" placeholder="hello@example.com" /></div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                   <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Event Date (Approx)</label>
-                      <input type="date" className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none transition-colors text-[#3a3a3a]" />
-                   </div>
-                   <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Event Location</label>
-                      <input type="text" className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none transition-colors text-[#3a3a3a]" placeholder="City, Venue, or Country" />
-                   </div>
+                   <div><label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Event Date</label><input type="date" className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none text-[#3a3a3a]" /></div>
+                   <div><label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Location</label><input type="text" className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none text-[#3a3a3a]" placeholder="City, Venue" /></div>
                 </div>
 
-                <div>
-                   <label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Your Message</label>
-                   <textarea rows="4" className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none transition-colors text-[#3a3a3a] resize-none" placeholder="Tell us more about you two, your vision, and any specific details..."></textarea>
-                </div>
+                <div><label className="block text-[10px] font-bold uppercase tracking-widest text-[#B3907A] mb-2">Message</label><textarea rows="4" className="w-full bg-[#F5F5EB]/30 border-b border-[#3a3a3a]/20 p-3 focus:border-[#B3907A] outline-none text-[#3a3a3a] resize-none" placeholder="Tell us your story..."></textarea></div>
 
                 <Button variant="dark" className="w-full md:w-auto mt-4">Send Inquiry</Button>
              </form>
@@ -625,6 +550,161 @@ const ContactPage = () => {
 };
 
 /* ========================================
+   CHATBOT COMPONENT (With Links & Navigation)
+   ======================================== */
+/* ========================================
+   CHATBOT COMPONENT (Fixed Send Button)
+   ======================================== */
+const ChatWidget = ({ setCurrentPage }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    { text: "Hello! 👋 Welcome to Beyond & Forever. How can we help you today?", sender: 'bot' }
+  ]);
+  const [inputText, setInputText] = useState("");
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isOpen]);
+
+  const handleSend = () => {
+    if (!inputText.trim()) return;
+
+    // Add user message
+    const newMessages = [...messages, { text: inputText, sender: 'user' }];
+    setMessages(newMessages);
+    setInputText("");
+
+    // Smart Bot Response Logic
+    setTimeout(() => {
+      let botReply = "Thank you for your message. One of our team members will be with you shortly.";
+      let actionButton = null;
+      const lowerInput = inputText.toLowerCase();
+
+      // 1. PRICING / PACKAGES
+      if (lowerInput.includes("price") || lowerInput.includes("cost") || lowerInput.includes("package")) {
+        botReply = "Our packages start from $1,500. You can view full investment details on our Home page.";
+        actionButton = { label: "View Pricing", page: "Home" }; 
+      } 
+      // 2. BOOKING / CONTACT
+      else if (lowerInput.includes("book") || lowerInput.includes("date") || lowerInput.includes("contact")) {
+        botReply = "We'd love to capture your day! Please fill out the form on our Contact page to check availability.";
+        actionButton = { label: "Go to Contact", page: "Contact" };
+      } 
+      // 3. PORTFOLIO / PHOTOS
+      else if (lowerInput.includes("photo") || lowerInput.includes("work") || lowerInput.includes("gallery") || lowerInput.includes("portfolio")) {
+        botReply = "You can explore our curated galleries and latest projects in our Portfolio.";
+        actionButton = { label: "View Portfolio", page: "Portfolio" };
+      }
+      // 4. ABOUT / TEAM
+      else if (lowerInput.includes("team") || lowerInput.includes("about") || lowerInput.includes("who")) {
+        botReply = "We are a boutique studio based in Sri Lanka. Learn more about our story and team here.";
+        actionButton = { label: "Meet the Team", page: "About" };
+      }
+      // 5. LOCATION
+      else if (lowerInput.includes("location") || lowerInput.includes("travel") || lowerInput.includes("where")) {
+        botReply = "We are based in Colombo 03 but travel island-wide (and internationally!) for destination shoots.";
+        actionButton = { label: "Contact Us", page: "Contact" };
+      }
+      
+      // 6. SERVICES
+      else if (lowerInput.includes("service") || lowerInput.includes("offer") || lowerInput.includes("what do you do")) {
+        botReply = "We offer Wedding, Elopement, Portrait, Fashion, and Event photography. You can see our full service list on the Home page.";
+        actionButton = { label: "View Services", page: "Home" };
+      }
+
+      setMessages(prev => [...prev, { text: botReply, sender: 'bot', action: actionButton }]);
+    }, 800);
+  };
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
+    setIsOpen(false); 
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-[60] font-sans">
+      {/* Chat Window */}
+      {isOpen && (
+        <div className="absolute bottom-16 right-0 w-80 md:w-96 bg-white/90 backdrop-blur-xl border border-[#B3907A]/20 shadow-2xl rounded-lg overflow-hidden flex flex-col animate-fade-in origin-bottom-right transition-all duration-300">
+          
+          {/* Header */}
+          <div className="bg-[#3a3a3a] p-4 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-white text-sm font-bold uppercase tracking-widest">Concierge</span>
+            </div>
+            {/* FIX: Explicit transparency for Close button */}
+            <button onClick={() => setIsOpen(false)} className="bg-transparent outline-none border-none text-white/50 hover:text-white transition-colors cursor-pointer p-1">
+              <X size={18}/>
+            </button>
+          </div>
+
+          {/* Messages Area */}
+          <div className="h-80 overflow-y-auto p-4 space-y-4 bg-[#F5F5EB]/50">
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
+                
+                {/* Message Bubble */}
+                <div className={`max-w-[80%] p-3 text-sm rounded-lg shadow-sm ${
+                  msg.sender === 'user' 
+                    ? 'bg-[#B3907A] text-white rounded-br-none' 
+                    : 'bg-white text-[#3a3a3a] border border-[#3a3a3a]/5 rounded-bl-none'
+                }`}>
+                  {msg.text}
+                </div>
+
+                {/* Action Button (Link) */}
+                {msg.action && (
+                  <button 
+                    onClick={() => handleNavigate(msg.action.page)}
+                    className="mt-2 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#B3907A] hover:underline bg-white px-3 py-1 rounded-full shadow-sm border border-[#B3907A]/20 transition-transform hover:scale-105 cursor-pointer"
+                  >
+                    {msg.action.label} <ExternalLink size={10} />
+                  </button>
+                )}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input Area */}
+          <div className="p-3 bg-white border-t border-[#3a3a3a]/5 flex gap-2 items-center">
+            <input 
+              type="text" 
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+              placeholder="Type a message..." 
+              className="flex-1 bg-[#F5F5EB] rounded-full px-4 py-2 text-sm text-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#B3907A]"
+            />
+            
+            {/* FIX: Forced 'color="white"' on the Icon directly. This overrides any CSS issues. */}
+            <button 
+              onClick={handleSend}
+              className="w-10 h-10 bg-[#3a3a3a] rounded-full flex items-center justify-center hover:bg-[#B3907A] transition-colors shadow-md outline-none border-none cursor-pointer"
+            >
+              <Send color="white" size={18} strokeWidth={2} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Toggle Button */}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-14 h-14 bg-[#B3907A] text-white rounded-full shadow-xl flex items-center justify-center hover:bg-[#3a3a3a] transition-all duration-300 hover:scale-110 group outline-none border-none cursor-pointer"
+      >
+        {isOpen ? <X size={24} /> : <MessageCircle size={24} className="group-hover:animate-bounce" />}
+      </button>
+    </div>
+  );
+};
+/* ========================================
    MAIN APP
    ======================================== */
 
@@ -633,7 +713,12 @@ const App = () => {
   useEffect(() => { window.scrollTo(0, 0); }, [currentPage]);
 
   return (
+    // Removed 'cursor-none' to restore default mouse pointer
     <div className="bg-[#F5F5EB] min-h-screen font-sans text-[#3a3a3a] selection:bg-[#B3907A] selection:text-white">
+      
+      {/* Chatbot with Navigation Capability */}
+      <ChatWidget setCurrentPage={setCurrentPage} />
+      
       <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
       <main>{
         currentPage === 'Home' ? <HomePage setCurrentPage={setCurrentPage} /> :
