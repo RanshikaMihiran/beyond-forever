@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Camera, Instagram, Facebook, Mail, Phone, MapPin, X, Menu, 
   ArrowRight, ChevronDown, Check, Play, Aperture, Heart, Users, Coffee, Calendar,
-  MessageCircle, Send, ExternalLink
+  MessageCircle, Send, ExternalLink, ChevronLeft, ChevronRight, ZoomIn
 } from 'lucide-react';
 
 /* ========================================
@@ -35,7 +35,7 @@ const CONTACT_HERO_IMAGES = [
   "/images/hero/Image 3.jpg"
 ];
 
-// Main Portfolio Grid
+// Main Portfolio Grid (Used for Home Page Masonry too)
 const PORTFOLIO_PROJECTS = [
   { id: 1, title: "Beach Wedding", category: "Wedding", src: "/images/portfolio/Image 1.jpg" },
   { id: 2, title: "Kandy Portrait", category: "Portrait", src: "/images/portfolio/Image 2.jpg" },
@@ -45,7 +45,6 @@ const PORTFOLIO_PROJECTS = [
   { id: 6, title: "Traditional", category: "Event",    src: "/images/portfolio/Image 6.jpg" },
 ];
 
-// Images specifically for the falling section (Polaroid style)
 const FALLING_GALLERY = [
   { src: "/images/portfolio/Image 1.jpg", label: "The Beginning" },
   { src: "/images/portfolio/Image 2.jpg", label: "Pure Joy" },
@@ -102,6 +101,58 @@ const Button = ({ children, onClick, variant = 'primary', className = '' }) => {
   return <button onClick={onClick} className={`${baseStyle} ${variants[variant]} ${className}`}>{children}</button>;
 };
 
+// --- LIGHTBOX COMPONENT (For Full Screen Image View) ---
+const Lightbox = ({ images, currentIndex, onClose, onNext, onPrev }) => {
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') onNext();
+      if (e.key === 'ArrowLeft') onPrev();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, onNext, onPrev]);
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center backdrop-blur-sm animate-fade-in">
+      
+      {/* Close Button */}
+      <button onClick={onClose} className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors p-2 bg-transparent border-none cursor-pointer">
+        <X size={40} strokeWidth={1} />
+      </button>
+
+      {/* Navigation Left */}
+      <button onClick={(e) => { e.stopPropagation(); onPrev(); }} className="absolute left-4 md:left-10 text-white/50 hover:text-white transition-colors bg-transparent border-none cursor-pointer p-4">
+        <ChevronLeft size={60} strokeWidth={0.5} />
+      </button>
+
+      {/* Main Image */}
+      <div className="relative max-w-[90vw] max-h-[85vh]">
+        <img 
+          src={images[currentIndex].src} 
+          alt={images[currentIndex].title} 
+          className="max-w-full max-h-[85vh] object-contain shadow-2xl"
+        />
+        <div className="absolute bottom-[-50px] left-0 w-full text-center">
+          <h3 className="text-white font-serif text-2xl tracking-wide">{images[currentIndex].title}</h3>
+          <p className="text-[#B3907A] text-xs uppercase tracking-widest mt-1">{images[currentIndex].category}</p>
+        </div>
+      </div>
+
+      {/* Navigation Right */}
+      <button onClick={(e) => { e.stopPropagation(); onNext(); }} className="absolute right-4 md:right-10 text-white/50 hover:text-white transition-colors bg-transparent border-none cursor-pointer p-4">
+        <ChevronRight size={60} strokeWidth={0.5} />
+      </button>
+
+      {/* Counter */}
+      <div className="absolute top-6 left-6 text-white/30 font-serif italic text-lg">
+        {currentIndex + 1} / {images.length}
+      </div>
+    </div>
+  );
+};
+
 // --- PARALLAX HERO WITH KEN BURNS ZOOM ---
 const ParallaxHero = ({ images, children, height = "h-screen" }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -132,20 +183,18 @@ const ParallaxHero = ({ images, children, height = "h-screen" }) => {
   );
 };
 
-// --- FALLING MEMORIES (POLAROID STYLE WITH SWAY) ---
+// --- FALLING MEMORIES ---
 const FallingMemories = () => {
-  const items = [...FALLING_GALLERY, ...FALLING_GALLERY]; // Double up for density
+  const items = [...FALLING_GALLERY, ...FALLING_GALLERY]; 
 
   return (
     <section className="relative h-[100vh] bg-[#EFE7DA] overflow-hidden flex items-center justify-center">
-      {/* Background Text */}
       <div className="absolute z-0 text-center pointer-events-none select-none">
         <h2 className="font-serif text-6xl md:text-9xl text-[#3a3a3a] opacity-[0.03] uppercase tracking-[0.5em] leading-tight">
           Captured<br/>In Time
         </h2>
       </div>
 
-      {/* Falling Container */}
       <div className="absolute inset-0 pointer-events-none z-10">
         {items.map((item, index) => {
           const left = Math.floor(Math.random() * 100);
@@ -213,7 +262,6 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
     <>
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ${scrolled ? 'bg-[#F5F5EB]/90 backdrop-blur-md shadow-sm py-4 border-b border-[#3a3a3a]/5' : 'bg-transparent py-8'}`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          
           <div className="cursor-pointer z-50 group" onClick={() => setCurrentPage('Home')}>
             <h1 className={`font-serif text-2xl font-bold tracking-wider transition-colors ${textColor}`}>
               B&F <span className={`font-sans font-light text-xs tracking-[0.3em] ml-1 transition-colors ${logoColor}`}>STUDIO</span>
@@ -299,13 +347,145 @@ const Footer = ({ setCurrentPage }) => (
 );
 
 /* ========================================
+   CHATBOT COMPONENT
+   ======================================== */
+const ChatWidget = ({ setCurrentPage }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    { text: "Hello! 👋 Welcome to Beyond & Forever. How can we help you today?", sender: 'bot' }
+  ]);
+  const [inputText, setInputText] = useState("");
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isOpen]);
+
+  const handleSend = () => {
+    if (!inputText.trim()) return;
+
+    const newMessages = [...messages, { text: inputText, sender: 'user' }];
+    setMessages(newMessages);
+    setInputText("");
+
+    setTimeout(() => {
+      let botReply = "Thank you for your message. One of our team members will be with you shortly.";
+      let actionButton = null;
+      const lowerInput = inputText.toLowerCase();
+
+      if (lowerInput.includes("price") || lowerInput.includes("cost") || lowerInput.includes("package")) {
+        botReply = "Our packages start from $1,500. You can view full investment details on our Home page.";
+        actionButton = { label: "View Pricing", page: "Home" }; 
+      } else if (lowerInput.includes("book") || lowerInput.includes("date") || lowerInput.includes("contact")) {
+        botReply = "We'd love to capture your day! Please fill out the form on our Contact page to check availability.";
+        actionButton = { label: "Go to Contact", page: "Contact" };
+      } else if (lowerInput.includes("photo") || lowerInput.includes("work") || lowerInput.includes("gallery") || lowerInput.includes("portfolio")) {
+        botReply = "You can explore our curated galleries and latest projects in our Portfolio.";
+        actionButton = { label: "View Portfolio", page: "Portfolio" };
+      } else if (lowerInput.includes("service") || lowerInput.includes("offer")) {
+        botReply = "We offer Wedding, Elopement, Portrait, Fashion, and Event photography. Check out our Home page for details.";
+        actionButton = { label: "View Services", page: "Home" };
+      }
+
+      setMessages(prev => [...prev, { text: botReply, sender: 'bot', action: actionButton }]);
+    }, 800);
+  };
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
+    setIsOpen(false); 
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-[60] font-sans">
+      {isOpen && (
+        <div className="absolute bottom-16 right-0 w-80 md:w-96 bg-white/90 backdrop-blur-xl border border-[#B3907A]/20 shadow-2xl rounded-lg overflow-hidden flex flex-col animate-fade-in origin-bottom-right transition-all duration-300">
+          <div className="bg-[#3a3a3a] p-4 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-white text-sm font-bold uppercase tracking-widest">Concierge</span>
+            </div>
+            <button onClick={() => setIsOpen(false)} className="bg-transparent outline-none border-none text-white/50 hover:text-white transition-colors cursor-pointer p-1">
+              <X size={18}/>
+            </button>
+          </div>
+          <div className="h-80 overflow-y-auto p-4 space-y-4 bg-[#F5F5EB]/50">
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
+                <div className={`max-w-[80%] p-3 text-sm rounded-lg shadow-sm ${
+                  msg.sender === 'user' ? 'bg-[#B3907A] text-white rounded-br-none' : 'bg-white text-[#3a3a3a] border border-[#3a3a3a]/5 rounded-bl-none'
+                }`}>
+                  {msg.text}
+                </div>
+                {msg.action && (
+                  <button onClick={() => handleNavigate(msg.action.page)} className="mt-2 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#B3907A] hover:underline bg-white px-3 py-1 rounded-full shadow-sm border border-[#B3907A]/20 transition-transform hover:scale-105 cursor-pointer">
+                    {msg.action.label} <ExternalLink size={10} />
+                  </button>
+                )}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+          <div className="p-3 bg-white border-t border-[#3a3a3a]/5 flex gap-2 items-center">
+            <input type="text" value={inputText} onChange={(e) => setInputText(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSend()} placeholder="Type a message..." className="flex-1 bg-[#F5F5EB] rounded-full px-4 py-2 text-sm text-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#B3907A]" />
+            <button onClick={handleSend} className="w-10 h-10 bg-[#3a3a3a] rounded-full flex items-center justify-center hover:bg-[#B3907A] transition-colors shadow-md outline-none border-none cursor-pointer">
+              <Send color="white" size={18} strokeWidth={2} />
+            </button>
+          </div>
+        </div>
+      )}
+      <button onClick={() => setIsOpen(!isOpen)} className="w-14 h-14 bg-[#B3907A] text-white rounded-full shadow-xl flex items-center justify-center hover:bg-[#3a3a3a] transition-all duration-300 hover:scale-110 group outline-none border-none cursor-pointer">
+        {isOpen ? <X size={24} /> : <MessageCircle size={24} className="group-hover:animate-bounce" />}
+      </button>
+    </div>
+  );
+};
+
+/* ========================================
    PAGES
    ======================================== */
 
 const HomePage = ({ setCurrentPage }) => {
+  // Lightbox StatePAGES (HOME, ABOUT, PORTFOLIO, CONTACT)
+  const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  const openLightbox = (index) => {
+    setLightboxIndex(index);
+    setIsLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setIsLightboxOpen(false);
+    setLightboxIndex(null);
+  };
+
+  const nextImage = () => {
+    setLightboxIndex((prev) => (prev + 1) % PORTFOLIO_PROJECTS.length);
+  };
+
+  const prevImage = () => {
+    setLightboxIndex((prev) => (prev - 1 + PORTFOLIO_PROJECTS.length) % PORTFOLIO_PROJECTS.length);
+  };
+
   return (
     <div className="animate-fade-in w-full overflow-hidden bg-[#F5F5EB]">
       
+      {/* LIGHTBOX OVERLAY */}
+      {isLightboxOpen && (
+        <Lightbox 
+          images={PORTFOLIO_PROJECTS} 
+          currentIndex={lightboxIndex} 
+          onClose={closeLightbox} 
+          onNext={nextImage} 
+          onPrev={prevImage} 
+        />
+      )}
+
       <ParallaxHero images={HOME_HERO_IMAGES}>
         <div className="text-center max-w-5xl mx-auto mt-16">
           <div className="inline-flex items-center gap-3 border border-white/20 bg-white/5 backdrop-blur-sm px-6 py-2 rounded-full mb-8">
@@ -349,6 +529,53 @@ const HomePage = ({ setCurrentPage }) => {
 
       <FallingMemories />
 
+      {/* FEATURED WORK WITH MASONRY + LIGHTBOX */}
+      <section className="py-32 bg-[[#F5F5EB] relative">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="flex justify-between items-end mb-16">
+            <div>
+              <span className="text-[#B3907A] text-xs font-bold uppercase tracking-widest mb-2 block">Curated Galleries</span>
+              <h2 className="font-serif text-5xl text-[#3a3a3a]">Love Stories</h2>
+            </div>
+            <button onClick={() => setCurrentPage('Portfolio')} className="bg-transparent hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#3a3a3a] hover:text-[#B3907A] transition-colors border-none cursor-pointer">
+              View Full Portfolio <ArrowRight size={14}/>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {PORTFOLIO_PROJECTS.map((item, index) => (
+              <div 
+                key={item.id} 
+                className="group relative h-[500px] overflow-hidden cursor-pointer shadow-2xl rounded-sm"
+                onClick={() => openLightbox(index)}
+              >
+                <img 
+                  src={item.src} 
+                  alt={item.title} 
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                />
+                {/* Overlay Effect */}
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500"></div>
+                
+                {/* Zoom Icon */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 scale-50 group-hover:scale-100 transition-transform">
+                   <div className="bg-white/20 backdrop-blur-md p-4 rounded-full">
+                      <ZoomIn className="text-white" size={32} />
+                   </div>
+                </div>
+
+                <div className="absolute bottom-0 left-0 w-full p-6">
+                   <div className="bg-white/10 backdrop-blur-xl border border-white/10 text-white p-6 shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                      <span className="text-[10px] font-bold uppercase tracking-widest mb-2 block text-[#B3907A]">{item.category}</span>
+                      <h3 className="font-serif text-2xl group-hover:text-[#B3907A] transition-colors">{item.title}</h3>
+                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="py-20 bg-[#3a3a3a] text-[#F5F5EB]">
          <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
             {STATS.map((stat, idx) => (
@@ -385,29 +612,6 @@ const HomePage = ({ setCurrentPage }) => {
          </div>
       </section>
 
-      <section className="py-24 px-6 bg-white">
-         <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between mb-16">
-               <div className="max-w-lg">
-                  <h2 className="font-serif text-4xl text-[#3a3a3a] mb-4">Destination Weddings</h2>
-                  <p className="text-[#3a3a3a]/70">From the misty hills of Nuwara Eliya to the colonial ramparts of Galle.</p>
-               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-               {DESTINATIONS.map((dest) => (
-                  <div key={dest.id} className="relative h-80 group overflow-hidden rounded-sm">
-                     <img src={dest.img} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt={dest.place} />
-                     <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors"></div>
-                     <div className="absolute bottom-6 left-6 text-white">
-                        <div className="flex items-center gap-2 mb-1"><MapPin size={14} className="text-[#B3907A]"/> <span className="font-bold uppercase tracking-widest text-xs">{dest.place}</span></div>
-                        <p className="text-sm opacity-80">{dest.desc}</p>
-                     </div>
-                  </div>
-               ))}
-            </div>
-         </div>
-      </section>
-
       <section className="py-32 bg-[#3a3a3a] text-center px-6">
         <div className="max-w-3xl mx-auto">
            <h2 className="font-serif text-5xl md:text-7xl text-white mb-8">Let's Create Magic</h2>
@@ -418,6 +622,9 @@ const HomePage = ({ setCurrentPage }) => {
     </div>
   );
 };
+
+
+
 
 const AboutPage = ({ setCurrentPage }) => (
   <div className="min-h-screen bg-[#F5F5EB] animate-fade-in">
@@ -550,161 +757,6 @@ const ContactPage = () => {
 };
 
 /* ========================================
-   CHATBOT COMPONENT (With Links & Navigation)
-   ======================================== */
-/* ========================================
-   CHATBOT COMPONENT (Fixed Send Button)
-   ======================================== */
-const ChatWidget = ({ setCurrentPage }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { text: "Hello! 👋 Welcome to Beyond & Forever. How can we help you today?", sender: 'bot' }
-  ]);
-  const [inputText, setInputText] = useState("");
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isOpen]);
-
-  const handleSend = () => {
-    if (!inputText.trim()) return;
-
-    // Add user message
-    const newMessages = [...messages, { text: inputText, sender: 'user' }];
-    setMessages(newMessages);
-    setInputText("");
-
-    // Smart Bot Response Logic
-    setTimeout(() => {
-      let botReply = "Thank you for your message. One of our team members will be with you shortly.";
-      let actionButton = null;
-      const lowerInput = inputText.toLowerCase();
-
-      // 1. PRICING / PACKAGES
-      if (lowerInput.includes("price") || lowerInput.includes("cost") || lowerInput.includes("package")) {
-        botReply = "Our packages start from $1,500. You can view full investment details on our Home page.";
-        actionButton = { label: "View Pricing", page: "Home" }; 
-      } 
-      // 2. BOOKING / CONTACT
-      else if (lowerInput.includes("book") || lowerInput.includes("date") || lowerInput.includes("contact")) {
-        botReply = "We'd love to capture your day! Please fill out the form on our Contact page to check availability.";
-        actionButton = { label: "Go to Contact", page: "Contact" };
-      } 
-      // 3. PORTFOLIO / PHOTOS
-      else if (lowerInput.includes("photo") || lowerInput.includes("work") || lowerInput.includes("gallery") || lowerInput.includes("portfolio")) {
-        botReply = "You can explore our curated galleries and latest projects in our Portfolio.";
-        actionButton = { label: "View Portfolio", page: "Portfolio" };
-      }
-      // 4. ABOUT / TEAM
-      else if (lowerInput.includes("team") || lowerInput.includes("about") || lowerInput.includes("who")) {
-        botReply = "We are a boutique studio based in Sri Lanka. Learn more about our story and team here.";
-        actionButton = { label: "Meet the Team", page: "About" };
-      }
-      // 5. LOCATION
-      else if (lowerInput.includes("location") || lowerInput.includes("travel") || lowerInput.includes("where")) {
-        botReply = "We are based in Colombo 03 but travel island-wide (and internationally!) for destination shoots.";
-        actionButton = { label: "Contact Us", page: "Contact" };
-      }
-      
-      // 6. SERVICES
-      else if (lowerInput.includes("service") || lowerInput.includes("offer") || lowerInput.includes("what do you do")) {
-        botReply = "We offer Wedding, Elopement, Portrait, Fashion, and Event photography. You can see our full service list on the Home page.";
-        actionButton = { label: "View Services", page: "Home" };
-      }
-
-      setMessages(prev => [...prev, { text: botReply, sender: 'bot', action: actionButton }]);
-    }, 800);
-  };
-
-  const handleNavigate = (page) => {
-    setCurrentPage(page);
-    setIsOpen(false); 
-  };
-
-  return (
-    <div className="fixed bottom-6 right-6 z-[60] font-sans">
-      {/* Chat Window */}
-      {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 md:w-96 bg-white/90 backdrop-blur-xl border border-[#B3907A]/20 shadow-2xl rounded-lg overflow-hidden flex flex-col animate-fade-in origin-bottom-right transition-all duration-300">
-          
-          {/* Header */}
-          <div className="bg-[#3a3a3a] p-4 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-white text-sm font-bold uppercase tracking-widest">Concierge</span>
-            </div>
-            {/* FIX: Explicit transparency for Close button */}
-            <button onClick={() => setIsOpen(false)} className="bg-transparent outline-none border-none text-white/50 hover:text-white transition-colors cursor-pointer p-1">
-              <X size={18}/>
-            </button>
-          </div>
-
-          {/* Messages Area */}
-          <div className="h-80 overflow-y-auto p-4 space-y-4 bg-[#F5F5EB]/50">
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
-                
-                {/* Message Bubble */}
-                <div className={`max-w-[80%] p-3 text-sm rounded-lg shadow-sm ${
-                  msg.sender === 'user' 
-                    ? 'bg-[#B3907A] text-white rounded-br-none' 
-                    : 'bg-white text-[#3a3a3a] border border-[#3a3a3a]/5 rounded-bl-none'
-                }`}>
-                  {msg.text}
-                </div>
-
-                {/* Action Button (Link) */}
-                {msg.action && (
-                  <button 
-                    onClick={() => handleNavigate(msg.action.page)}
-                    className="mt-2 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#B3907A] hover:underline bg-white px-3 py-1 rounded-full shadow-sm border border-[#B3907A]/20 transition-transform hover:scale-105 cursor-pointer"
-                  >
-                    {msg.action.label} <ExternalLink size={10} />
-                  </button>
-                )}
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input Area */}
-          <div className="p-3 bg-white border-t border-[#3a3a3a]/5 flex gap-2 items-center">
-            <input 
-              type="text" 
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Type a message..." 
-              className="flex-1 bg-[#F5F5EB] rounded-full px-4 py-2 text-sm text-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#B3907A]"
-            />
-            
-            {/* FIX: Forced 'color="white"' on the Icon directly. This overrides any CSS issues. */}
-            <button 
-              onClick={handleSend}
-              className="w-10 h-10 bg-[#3a3a3a] rounded-full flex items-center justify-center hover:bg-[#B3907A] transition-colors shadow-md outline-none border-none cursor-pointer"
-            >
-              <Send color="white" size={18} strokeWidth={2} />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Toggle Button */}
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-[#B3907A] text-white rounded-full shadow-xl flex items-center justify-center hover:bg-[#3a3a3a] transition-all duration-300 hover:scale-110 group outline-none border-none cursor-pointer"
-      >
-        {isOpen ? <X size={24} /> : <MessageCircle size={24} className="group-hover:animate-bounce" />}
-      </button>
-    </div>
-  );
-};
-/* ========================================
    MAIN APP
    ======================================== */
 
@@ -713,12 +765,8 @@ const App = () => {
   useEffect(() => { window.scrollTo(0, 0); }, [currentPage]);
 
   return (
-    // Removed 'cursor-none' to restore default mouse pointer
     <div className="bg-[#F5F5EB] min-h-screen font-sans text-[#3a3a3a] selection:bg-[#B3907A] selection:text-white">
-      
-      {/* Chatbot with Navigation Capability */}
       <ChatWidget setCurrentPage={setCurrentPage} />
-      
       <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
       <main>{
         currentPage === 'Home' ? <HomePage setCurrentPage={setCurrentPage} /> :
