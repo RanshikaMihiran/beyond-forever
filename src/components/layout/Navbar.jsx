@@ -25,22 +25,22 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
 
   // --- DYNAMIC LOGIC ---
   
-  // 1. Determine if we need "Dark Mode" styles for the navbar
-  // We switch to dark text if:
-  // A) The user has scrolled down OR
-  // B) The mobile menu is currently OPEN (so we can see it against the beige background)
+  // 1. Determine "Dark Mode" (Dark Text)
+  // We switch to dark text if scrolled OR menu is open
   const isDarkState = scrolled || menuOpen;
 
   // 2. Colors based on state
+  // If Dark Mode: Dark Grey Text. If Top: White Text.
   const textColor = isDarkState ? 'text-[#3a3a3a]' : 'text-white';
   const logoAccent = isDarkState ? 'text-[#B3907A]' : 'text-[#EFE7DA]';
   const hoverColor = isDarkState ? 'group-hover:text-[#B3907A]' : 'group-hover:text-white/80';
   
-  // 3. Background Logic
-  // IMPORTANT: If menu is open, force background to solid beige immediately
+  // 3. Background Logic (THE FIX)
+  // If Scrolled/Menu Open: Solid Beige.
+  // If Top: TRANSPARENT GRADIENT (This makes white text readable on light images)
   const navbarBackground = isDarkState 
     ? 'bg-[#F5F5EB]/95 backdrop-blur-md shadow-sm border-b border-[#3a3a3a]/5' 
-    : 'bg-transparent';
+    : 'bg-gradient-to-b from-black/60 to-transparent'; 
 
   // 4. Button Border Logic
   const btnBorder = isDarkState
@@ -59,11 +59,11 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
           
           {/* --- LOGO --- */}
           <button 
-            className="cursor-pointer z-[100] group focus:outline-none !bg-transparent border-none p-0 relative" 
+            className="cursor-pointer z-[100] group focus:outline-none bg-transparent border-none p-0 relative" 
             onClick={() => { setCurrentPage('Home'); setMenuOpen(false); }}
           >
             <h1 className={`font-serif text-2xl font-bold tracking-wide transition-colors duration-300 ${textColor}`}>
-              B&F <span className={`font-sans font-light text-[10px] tracking-[0.3em] ml-1 transition-colors duration-300 ${logoAccent}`}>STUDIO</span>
+              Beyond <span className={`font-sans font-light text-[10px] tracking-[0.3em] ml-1 transition-colors duration-300 ${logoAccent}`}>STUDIO</span>
             </h1>
           </button>
 
@@ -75,8 +75,9 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
                 <button
                   key={link}
                   onClick={() => setCurrentPage(link)}
-                  className="relative px-5 py-2 group focus:outline-none !bg-transparent border-none"
+                  className="relative px-5 py-2 group focus:outline-none bg-transparent border-none"
                 >
+                  {/* Hover Pill Background */}
                   <span className={`
                     absolute inset-0 rounded-full transition-all duration-500 ease-out
                     ${isActive 
@@ -85,6 +86,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
                     }
                   `}></span>
 
+                  {/* Text */}
                   <span className={`
                     relative z-10 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors duration-300
                     ${isActive ? 'text-white' : `${textColor} ${hoverColor}`}
@@ -99,7 +101,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
               <button 
                 onClick={() => setCurrentPage('Contact')}
                 className={`
-                  !bg-transparent px-7 py-3 text-[10px] font-bold uppercase tracking-widest border transition-all duration-500 rounded-sm
+                  bg-transparent px-7 py-3 text-[10px] font-bold uppercase tracking-widest border transition-all duration-500 rounded-sm
                   ${btnBorder}
                 `}
               >
@@ -109,11 +111,10 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
           </div>
 
           {/* --- MOBILE TOGGLE --- */}
-          {/* Ensure z-index is highest and text color updates immediately */}
           <button 
             onClick={() => setMenuOpen(!menuOpen)} 
             className={`
-              md:hidden relative z-[100] p-2 focus:outline-none !bg-transparent border-none transition-colors duration-300
+              md:hidden relative z-[100] p-2 focus:outline-none bg-transparent border-none transition-colors duration-300
               ${textColor} 
             `}
             aria-label={menuOpen ? "Close Menu" : "Open Menu"}
@@ -138,7 +139,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
               onClick={() => { setCurrentPage(link); setMenuOpen(false); }} 
               style={{ transitionDelay: `${idx * 50}ms` }}
               className={`
-                !bg-transparent border-none font-serif text-4xl transition-all duration-500 transform
+                bg-transparent border-none font-serif text-4xl transition-all duration-500 transform
                 ${menuOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}
                 ${currentPage === link ? 'text-[#B3907A] italic' : 'text-[#3a3a3a] hover:text-[#B3907A]'}
               `}
