@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FALLING_GALLERY } from '../../data/constants';
-import { ArrowUpRight, X, Maximize2, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
+import { ArrowUpRight, X, Maximize2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const FallingMemories = () => {
   const displayItems = FALLING_GALLERY.slice(0, 5);
@@ -30,35 +30,40 @@ const FallingMemories = () => {
     setSelectedIndex(null);
   }, []);
 
-  // --- MOBILE AUTO-PLAY LOGIC ---
+  // --- MOBILE AUTO-PLAY ---
   useEffect(() => {
-    if (window.innerWidth >= 768) return; // Only run on mobile
+    // Only auto-play on mobile width
+    if (window.innerWidth >= 768) return;
     if (isPaused) return;
 
     const interval = setInterval(() => {
       if (sliderRef.current) {
         const nextIndex = (mobileActiveIndex + 1) % displayItems.length;
-        const scrollAmount = nextIndex * sliderRef.current.clientWidth; // Scroll 1 full screen width
         
+        // Scroll to the next slide
+        // We use scrollLeft based on the container's width to be precise
         sliderRef.current.scrollTo({
-          left: scrollAmount,
+          left: nextIndex * sliderRef.current.clientWidth,
           behavior: 'smooth'
         });
         
         setMobileActiveIndex(nextIndex);
       }
-    }, 4000); // 4 Seconds per slide
+    }, 3500); // 3.5s delay
 
     return () => clearInterval(interval);
   }, [mobileActiveIndex, isPaused, displayItems.length]);
 
-  // --- MOBILE SCROLL LISTENER (Updates Dots on Manual Swipe) ---
+  // --- SCROLL LISTENER (Updates State on Manual Swipe) ---
   const handleMobileScroll = () => {
     if (sliderRef.current) {
       const scrollLeft = sliderRef.current.scrollLeft;
       const width = sliderRef.current.clientWidth;
+      // Calculate which slide index we are closest to
       const newIndex = Math.round(scrollLeft / width);
-      setMobileActiveIndex(newIndex);
+      if (newIndex !== mobileActiveIndex) {
+        setMobileActiveIndex(newIndex);
+      }
     }
   };
 
@@ -91,6 +96,7 @@ const FallingMemories = () => {
            <h2 className="text-[#B3907A] font-serif text-4xl md:text-5xl mt-2 leading-tight">Captured Moments</h2>
         </div>
         <div className="flex items-center gap-2 text-[#B3907A]/60 mt-4 md:mt-0">
+           {/* Hint for mobile users */}
            <span className="md:hidden text-[10px] font-bold uppercase tracking-widest animate-pulse">Swipe &rarr;</span>
            <p className="text-[#B3907A]/40 text-xs hidden md:block">Click to expand.</p>
         </div>
@@ -103,14 +109,20 @@ const FallingMemories = () => {
         <div 
           ref={sliderRef}
           onScroll={handleMobileScroll}
-          onTouchStart={() => setIsPaused(true)}
-          onTouchEnd={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)} // Pause on user touch
+          onTouchEnd={() => setIsPaused(false)}  // Resume on release
           className="
             flex 
-            overflow-x-auto              /* Mobile: Horizontal Scroll */
-            snap-x snap-mandatory        /* Mobile: Snap Physics */
-            md:overflow-visible          /* Desktop: Normal Layout */
+            /* Mobile Scroll Settings */
+            overflow-x-auto 
+            snap-x snap-mandatory 
+            scroll-smooth
+            touch-pan-x           /* Ensures swipe gestures work */
+            
+            /* Desktop Reset */
+            md:overflow-visible
             md:h-[600px] 
+            
             scrollbar-hide
           "
         >
@@ -121,16 +133,16 @@ const FallingMemories = () => {
               <div 
                 key={index}
                 onMouseEnter={() => setHoveredIndex(index)}
-                onClick={() => setSelectedIndex(index)} // <--- CLICK TRIGGER
+                onClick={() => setSelectedIndex(index)} // Click to open lightbox
                 className={`
                   relative overflow-hidden cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group
                   
-                  /* MOBILE STYLES */
-                  flex-shrink-0           /* Keep Full Size */
-                  w-[100vw]               /* 100% Screen Width */
-                  h-[500px]               /* Fixed Height */
-                  snap-center             /* Lock to Center */
-                  px-6                    /* Padding for Card Look */
+                  /* MOBILE STYLES: FULL WIDTH CARD */
+                  flex-shrink-0           /* Do not shrink */
+                  w-full                  /* Take 100% of container width */
+                  h-[500px]               /* Fixed height */
+                  snap-center             /* Lock to center on scroll */
+                  px-6                    /* Padding for aesthetic */
 
                   /* DESKTOP STYLES */
                   md:px-0
@@ -143,7 +155,7 @@ const FallingMemories = () => {
                   ${isActive ? 'md:flex-[3]' : 'md:flex-1'}
                 `}
               >
-                {/* INNER CARD (Needed for padding on mobile) */}
+                {/* INNER CARD */}
                 <div className="w-full h-full relative rounded-[2rem] md:rounded-none overflow-hidden shadow-lg md:shadow-none border border-black/5 md:border-0">
                   
                   {/* Image */}
@@ -152,9 +164,9 @@ const FallingMemories = () => {
                     alt={item.label} 
                     className={`
                       absolute inset-0 w-full h-full object-cover transition-all duration-700
-                      /* Desktop Hover Effect */
+                      /* Desktop: Dim unless active */
                       ${isActive ? 'md:grayscale-0 md:scale-105 md:brightness-100' : 'md:grayscale md:brightness-[0.4] md:group-hover:brightness-75'}
-                      /* Mobile: Always Vivid */
+                      /* Mobile: Always bright */
                       grayscale-0 brightness-100
                     `} 
                   />
@@ -163,7 +175,7 @@ const FallingMemories = () => {
                   <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent transition-opacity duration-500 
                       ${isActive ? 'opacity-0' : 'opacity-0 md:group-hover:opacity-100'}`}></div>
                   
-                  {/* Mobile Gradient (Always visible for text) */}
+                  {/* Mobile Text Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent md:hidden"></div>
 
                   {/* Maximize Icon */}
@@ -200,13 +212,14 @@ const FallingMemories = () => {
           })}
         </div>
 
-        {/* --- MOBILE BOTTOM NAVIGATION DOTS --- */}
-        <div className="flex md:hidden justify-center items-center gap-3 mt-8">
+        {/* --- MOBILE NAVIGATION DOTS --- */}
+        <div className="flex md:hidden justify-center items-center gap-3 mt-6">
            {displayItems.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => {
                    if (sliderRef.current) {
+                      // Manual scroll via dot click
                       sliderRef.current.scrollTo({
                          left: idx * sliderRef.current.clientWidth,
                          behavior: 'smooth'
@@ -229,41 +242,37 @@ const FallingMemories = () => {
       {currentItem && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center">
           
-          {/* 1. Backdrop */}
           <div 
             className="absolute inset-0 bg-[#0a0a0a]/95 backdrop-blur-xl animate-bg-fade"
             onClick={handleClose}
           ></div>
 
-          {/* 2. Professional Close Button (Top Right) */}
+          {/* Close Button */}
           <button 
             onClick={handleClose}
             className="absolute top-6 right-6 z-[100000] group flex items-center justify-center w-14 h-14 rounded-full bg-white/5 border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:border-[#B3907A] hover:rotate-90 hover:scale-110 shadow-lg"
-            title="Close Gallery"
           >
             <X size={28} strokeWidth={1.5} />
           </button>
 
-          {/* 3. Professional Prev Button */}
+          {/* Prev Button */}
           <button 
             onClick={handlePrev}
             className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-[100000] group flex items-center justify-center w-14 h-14 rounded-full bg-white/5 border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:border-[#B3907A] hover:scale-110 backdrop-blur-md shadow-lg"
           >
-            <ChevronLeft size={32} strokeWidth={1} className="group-hover:-translate-x-0.5 transition-transform" />
+            <ChevronLeft size={32} strokeWidth={1} />
           </button>
 
-          {/* 4. Professional Next Button */}
+          {/* Next Button */}
           <button 
             onClick={handleNext}
             className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-[100000] group flex items-center justify-center w-14 h-14 rounded-full bg-white/5 border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:border-[#B3907A] hover:scale-110 backdrop-blur-md shadow-lg"
           >
-            <ChevronRight size={32} strokeWidth={1} className="group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight size={32} strokeWidth={1} />
           </button>
 
-          {/* 5. Image Container */}
-          <div 
-             className="relative z-[99999] w-full h-full p-4 md:p-12 flex flex-col items-center justify-center pointer-events-none"
-          >
+          {/* Image */}
+          <div className="relative z-[99999] w-full h-full p-4 md:p-12 flex flex-col items-center justify-center pointer-events-none">
             <img 
               key={selectedIndex} 
               src={currentItem.src} 
@@ -272,7 +281,6 @@ const FallingMemories = () => {
               onClick={(e) => e.stopPropagation()} 
             />
             
-            {/* Caption & Counter */}
             <div className="mt-8 text-center animate-slide-up pointer-events-auto">
               <h3 className="text-white font-serif text-3xl md:text-5xl italic mb-3 tracking-wide drop-shadow-lg">
                 {currentItem.label}
@@ -290,15 +298,11 @@ const FallingMemories = () => {
       )}
 
       <style>{`
-        /* Hide Scrollbar */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Animations */
         @keyframes bg-fade { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         @keyframes slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
         .animate-bg-fade { animation: bg-fade 0.4s ease-out forwards; }
         .animate-scale-in { animation: scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-slide-up { animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards; opacity: 0; }
