@@ -46,30 +46,36 @@ const FallingMemories = () => {
   return (
     <section className="relative bg-white py-20 px-0 md:px-0 min-h-[80vh] flex flex-col justify-center overflow-hidden">
       
-      {/* HEADER */}
-      <div className="max-w-7xl mx-auto px-6 mb-8 w-full flex flex-col md:flex-row justify-between items-end">
-        <div>
+      {/* HEADER (Fixed: Left Aligned on Mobile) */}
+      <div className="max-w-7xl mx-auto px-6 mb-8 w-full flex flex-col md:flex-row justify-between items-start md:items-end">
+        <div className="text-left">
            <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em]">Gallery</span>
-           <h2 className="text-[#B3907A] font-serif text-3xl md:text-5xl mt-2">Captured Moments</h2>
+           <h2 className="text-[#B3907A] font-serif text-4xl md:text-5xl mt-2 leading-tight">Captured Moments</h2>
         </div>
-        <div className="flex items-center gap-2 text-[#B3907A]/60 mt-2 md:mt-0">
-           <span className="md:hidden text-[10px] font-bold uppercase tracking-widest animate-pulse">Swipe to Explore &rarr;</span>
+        
+        {/* Mobile Swipe Hint */}
+        <div className="flex items-center gap-2 text-[#B3907A]/60 mt-4 md:mt-0">
+           <span className="md:hidden text-[10px] font-bold uppercase tracking-widest animate-pulse flex items-center gap-2">
+              Swipe <ChevronRight size={12} />
+           </span>
            <p className="text-[#B3907A]/40 text-xs hidden md:block">Click to expand.</p>
         </div>
       </div>
 
       {/* GALLERY STRIP (Slider on Mobile, Accordion on Desktop) */}
-      <div className="
-        w-full max-w-[1400px] mx-auto 
-        flex 
-        md:flex-row flex-row            /* Always Row */
-        overflow-x-auto md:overflow-visible /* Scroll on mobile, visible on desktop */
-        snap-x snap-mandatory           /* Snap effect on mobile */
-        h-[500px] md:h-[600px]          /* Height adjustment */
-        gap-4 md:gap-0                  /* Gap on mobile, connected on desktop */
-        px-6 md:px-0                    /* Side padding on mobile */
-        scrollbar-hide                  /* Custom class to hide scrollbar */
-      ">
+      <div 
+        className="
+          w-full max-w-[1400px] mx-auto 
+          flex 
+          overflow-x-auto md:overflow-visible /* Horizontal Scroll on Mobile */
+          snap-x snap-mandatory               /* Snap Effect */
+          h-[500px] md:h-[600px]              /* Height */
+          gap-4 md:gap-0                      /* Gaps on Mobile */
+          px-6 md:px-0                        /* Side Padding on Mobile */
+          pb-8 md:pb-0                        /* Bottom padding for scrollbar/shadow */
+          scrollbar-hide                      /* Hide scrollbar */
+        "
+      >
         {displayItems.map((item, index) => {
           const isActive = hoveredIndex === index;
 
@@ -81,19 +87,23 @@ const FallingMemories = () => {
             className={`
               relative overflow-hidden cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group
               
-              /* DESKTOP STYLES */
-              md:border-r border-white/10 last:border-0
-              md:h-full md:w-auto
-              ${isActive ? 'md:flex-[3]' : 'md:flex-1'}
-
               /* MOBILE SLIDER STYLES */
-              flex-shrink-0
-              min-w-[85vw]         /* Card takes 85% of screen width */
-              h-full
-              snap-center          /* Snaps to center */
-              rounded-[20px]       /* Round corners on mobile */
-              md:rounded-none      /* Square on desktop */
-              shadow-lg md:shadow-none
+              flex-shrink-0        /* Don't shrink on mobile */
+              w-[85vw]             /* Fixed width on mobile (85% of screen) */
+              h-full               /* Full container height */
+              snap-center          /* Snap to center */
+              rounded-[20px]       /* Rounded cards */
+              shadow-lg            /* Shadow for depth */
+
+              /* DESKTOP RESET & ACCORDION */
+              md:flex-shrink       /* Allow shrink on desktop */
+              md:w-auto            /* Auto width for flex-grow */
+              md:rounded-none      /* Square edges */
+              md:shadow-none       
+              md:border-r border-white/10 last:border-0
+              
+              /* Desktop Flex Logic */
+              ${isActive ? 'md:flex-[3]' : 'md:flex-1'}
             `}
           >
             {/* Main Image */}
@@ -145,9 +155,12 @@ const FallingMemories = () => {
           </div>
           );
         })}
+        
+        {/* Spacer for last item padding on mobile */}
+        <div className="w-2 flex-shrink-0 md:hidden"></div>
       </div>
 
-      {/* --- LIGHTBOX (SAME AS BEFORE) --- */}
+      {/* --- LIGHTBOX (UNCHANGED) --- */}
       {currentItem && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center">
           <div 
@@ -204,11 +217,10 @@ const FallingMemories = () => {
       )}
 
       <style>{`
-        /* Hide Scrollbar for Chrome, Safari and Opera */
+        /* Hide Scrollbar */
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
-        /* Hide scrollbar for IE, Edge and Firefox */
         .scrollbar-hide {
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
