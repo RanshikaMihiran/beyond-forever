@@ -5,7 +5,6 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   
-  // Navigation Links
   const navLinks = ['Home', 'About', 'Portfolio', 'Testimonials', 'Contact'];
 
   // Scroll Detection
@@ -24,15 +23,27 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
     }
   }, [menuOpen]);
 
-  // --- DYNAMIC STYLES ---
-  // If menu is OPEN, text must be DARK so it is visible on the light background
-  const isDarkText = scrolled || menuOpen;
+  // --- DYNAMIC LOGIC ---
+  
+  // 1. Determine if we need "Dark Mode" styles for the navbar
+  // We switch to dark text if:
+  // A) The user has scrolled down OR
+  // B) The mobile menu is currently OPEN (so we can see it against the beige background)
+  const isDarkState = scrolled || menuOpen;
 
-  const textColor = isDarkText ? 'text-[#3a3a3a]' : 'text-white';
-  const logoAccent = isDarkText ? 'text-[#B3907A]' : 'text-[#EFE7DA]';
-  const hoverColor = isDarkText ? 'group-hover:text-[#B3907A]' : 'group-hover:text-white/80';
+  // 2. Colors based on state
+  const textColor = isDarkState ? 'text-[#3a3a3a]' : 'text-white';
+  const logoAccent = isDarkState ? 'text-[#B3907A]' : 'text-[#EFE7DA]';
+  const hoverColor = isDarkState ? 'group-hover:text-[#B3907A]' : 'group-hover:text-white/80';
+  
+  // 3. Background Logic
+  // IMPORTANT: If menu is open, force background to solid beige immediately
+  const navbarBackground = isDarkState 
+    ? 'bg-[#F5F5EB]/95 backdrop-blur-md shadow-sm border-b border-[#3a3a3a]/5' 
+    : 'bg-transparent';
 
-  const btnBorder = isDarkText
+  // 4. Button Border Logic
+  const btnBorder = isDarkState
     ? 'border-[#3a3a3a] text-[#3a3a3a] hover:bg-[#3a3a3a] hover:text-white' 
     : 'border-white/40 text-white hover:bg-white hover:text-[#3a3a3a]';
 
@@ -40,22 +51,19 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
     <>
       <nav 
         className={`
-          fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]
-          ${scrolled 
-            ? 'bg-[#F5F5EB]/95 backdrop-blur-md shadow-sm py-4 border-b border-[#3a3a3a]/5' 
-            : 'bg-transparent py-8'
-          }
+          fixed top-0 left-0 w-full z-[100] transition-all duration-300 ease-in-out py-4
+          ${navbarBackground}
         `}
       >
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           
           {/* --- LOGO --- */}
           <button 
-            className="cursor-pointer z-50 group focus:outline-none !bg-transparent border-none p-0 relative" 
+            className="cursor-pointer z-[100] group focus:outline-none !bg-transparent border-none p-0 relative" 
             onClick={() => { setCurrentPage('Home'); setMenuOpen(false); }}
           >
-            <h1 className={`font-serif text-2xl font-bold tracking-wide transition-colors duration-500 ${textColor}`}>
-              B&F <span className={`font-sans font-light text-[10px] tracking-[0.3em] ml-1 transition-colors duration-500 ${logoAccent}`}>STUDIO</span>
+            <h1 className={`font-serif text-2xl font-bold tracking-wide transition-colors duration-300 ${textColor}`}>
+              B&F <span className={`font-sans font-light text-[10px] tracking-[0.3em] ml-1 transition-colors duration-300 ${logoAccent}`}>STUDIO</span>
             </h1>
           </button>
 
@@ -100,15 +108,15 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             </div>
           </div>
 
-          {/* --- MOBILE TOGGLE (UPDATED) --- */}
-          {/* Added 'p-4' for bigger touch area and 'z-[60]' to force it on top */}
+          {/* --- MOBILE TOGGLE --- */}
+          {/* Ensure z-index is highest and text color updates immediately */}
           <button 
             onClick={() => setMenuOpen(!menuOpen)} 
             className={`
-              md:hidden relative z-[60] focus:outline-none !bg-transparent border-none p-4 -mr-4 transition-colors duration-300 cursor-pointer
+              md:hidden relative z-[100] p-2 focus:outline-none !bg-transparent border-none transition-colors duration-300
               ${textColor} 
             `}
-            aria-label="Toggle Menu"
+            aria-label={menuOpen ? "Close Menu" : "Open Menu"}
           >
             {menuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
@@ -118,9 +126,9 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
       {/* --- MOBILE MENU OVERLAY --- */}
       <div 
         className={`
-          fixed inset-0 h-[100dvh] bg-[#F5F5EB] z-40 flex flex-col justify-center items-center 
-          transition-all duration-700 ease-[cubic-bezier(0.77,0,0.175,1)]
-          ${menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}
+          fixed inset-0 h-[100vh] bg-[#F5F5EB] z-[90] flex flex-col justify-center items-center 
+          transition-all duration-500 ease-in-out
+          ${menuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-5'}
         `}
       >
         <div className="flex flex-col space-y-8 text-center">
@@ -128,10 +136,10 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             <button 
               key={link} 
               onClick={() => { setCurrentPage(link); setMenuOpen(false); }} 
-              style={{ transitionDelay: `${idx * 100}ms` }}
+              style={{ transitionDelay: `${idx * 50}ms` }}
               className={`
-                !bg-transparent border-none font-serif text-4xl md:text-5xl transition-all duration-500 transform
-                ${menuOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}
+                !bg-transparent border-none font-serif text-4xl transition-all duration-500 transform
+                ${menuOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}
                 ${currentPage === link ? 'text-[#B3907A] italic' : 'text-[#3a3a3a] hover:text-[#B3907A]'}
               `}
             >
