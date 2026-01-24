@@ -6,28 +6,14 @@ const FallingMemories = () => {
   const displayItems = FALLING_GALLERY.slice(0, 5);
   
   // --- STATE ---
-  const [hoveredIndex, setHoveredIndex] = useState(0); // Desktop Hover
-  const [selectedIndex, setSelectedIndex] = useState(null); // Lightbox Open
-  const [mobileIndex, setMobileIndex] = useState(0); // Current Mobile Slide
-  const [isPaused, setIsPaused] = useState(false); // Pause Auto-play on touch
+  const [hoveredIndex, setHoveredIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [mobileIndex, setMobileIndex] = useState(0); 
+  const [isPaused, setIsPaused] = useState(false);
 
   const sliderRef = useRef(null);
 
   // --- ACTIONS ---
-  
-  // 1. Open Lightbox
-  const openLightbox = (index) => {
-    // We check if the user was dragging/scrolling. If they were, don't open.
-    // For simplicity here, we assume a clean click event.
-    setSelectedIndex(index);
-  };
-
-  const handleClose = useCallback((e) => {
-    if(e) e.stopPropagation();
-    setSelectedIndex(null);
-  }, []);
-
-  // 2. Lightbox Navigation
   const handleNext = useCallback((e) => {
     if (e) e.stopPropagation();
     setSelectedIndex((prev) => (prev + 1) % displayItems.length);
@@ -38,42 +24,40 @@ const FallingMemories = () => {
     setSelectedIndex((prev) => (prev === 0 ? displayItems.length - 1 : prev - 1));
   }, [displayItems.length]);
 
+  const handleClose = useCallback((e) => {
+    if(e) e.stopPropagation();
+    setSelectedIndex(null);
+  }, []);
 
-  // --- MOBILE AUTO-PLAY ENGINE ---
+  // --- MOBILE AUTO-PLAY ---
   useEffect(() => {
-    if (window.innerWidth >= 768) return; // Disable on Desktop
-    if (isPaused) return; // Don't scroll if user is touching
+    if (window.innerWidth >= 768) return; 
+    if (isPaused) return;
 
     const interval = setInterval(() => {
       if (sliderRef.current) {
-        // Calculate where we need to go
-        const currentScroll = sliderRef.current.scrollLeft;
-        const width = sliderRef.current.clientWidth;
-        const totalWidth = sliderRef.current.scrollWidth;
+        const nextIndex = (mobileIndex + 1) % displayItems.length;
+        // Scroll to exact position of next card
+        const cardWidth = sliderRef.current.children[0].clientWidth; // Get real width of card
+        const gap = 24; // Corresponds to gap-6 (1.5rem = 24px)
         
-        // If we are at the end, scroll to start, otherwise scroll one width right
-        let nextScroll = currentScroll + width;
-        if (nextScroll >= totalWidth - 10) { // buffer
-           nextScroll = 0;
-        }
-
         sliderRef.current.scrollTo({
-          left: nextScroll,
+          left: nextIndex * (cardWidth + gap),
           behavior: 'smooth'
         });
+        setMobileIndex(nextIndex);
       }
-    }, 3000); // 3 Seconds
+    }, 3500);
 
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [mobileIndex, isPaused, displayItems.length]);
 
-
-  // --- SCROLL LISTENER (Updates Dots) ---
+  // --- SCROLL LISTENER ---
   const handleScroll = () => {
     if (sliderRef.current) {
       const scrollLeft = sliderRef.current.scrollLeft;
-      const width = sliderRef.current.clientWidth;
-      const index = Math.round(scrollLeft / width);
+      const cardWidth = sliderRef.current.children[0].clientWidth; 
+      const index = Math.round(scrollLeft / cardWidth);
       setMobileIndex(index);
     }
   };
@@ -119,8 +103,8 @@ const FallingMemories = () => {
         <div 
           ref={sliderRef}
           onScroll={handleScroll}
-          onTouchStart={() => setIsPaused(true)} // User touches -> Stop AutoPlay
-          onTouchEnd={() => setIsPaused(false)}  // User lifts -> Resume AutoPlay
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setIsPaused(false)}
           className="
             flex 
             /* MOBILE SCROLL SETTINGS */
@@ -128,9 +112,13 @@ const FallingMemories = () => {
             snap-x snap-mandatory 
             scroll-smooth
             touch-pan-x
+            gap-6                 /* Gap between slides */
+            px-6                  /* Left/Right padding */
+            pb-8                  /* Bottom padding */
             
             /* DESKTOP RESET */
             md:overflow-visible
+            md:gap-0 md:px-0 md:pb-0
             md:h-[600px] 
             
             scrollbar-hide
@@ -143,30 +131,27 @@ const FallingMemories = () => {
               <div 
                 key={index}
                 onMouseEnter={() => setHoveredIndex(index)}
-                onClick={() => openLightbox(index)} 
+                onClick={() => setSelectedIndex(index)} // CLICK TO OPEN
                 className={`
                   relative overflow-hidden cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group
                   
-                  /* MOBILE: FULL WIDTH CARD */
-                  flex-shrink-0           /* FORCE: Do not shrink */
-                  w-[100vw]               /* FORCE: Full Screen Width */
+                  /* --- MOBILE FIX: FLEX-NONE --- */
+                  flex-none               /* FORCE ITEM TO NOT SHRINK */
+                  w-[85vw]                /* FORCE WIDTH: 85% of screen */
                   h-[500px]               /* Fixed Height */
                   snap-center             /* Lock to center */
-                  px-6                    /* Padding so it looks like a card */
-                  pb-8                    /* Bottom padding for dots space */
-
-                  /* DESKTOP: FLEX ACCORDION */
-                  md:px-0 md:pb-0
+                  
+                  /* DESKTOP STYLES */
                   md:flex-shrink
                   md:w-auto 
                   md:h-full
                   md:border-r border-white/10 last:border-0
 
-                  /* Desktop Accordion Expansion */
+                  /* Desktop Accordion Logic */
                   ${isActive ? 'md:flex-[3]' : 'md:flex-1'}
                 `}
               >
-                {/* INNER CARD WRAPPER */}
+                {/* INNER CARD */}
                 <div className="w-full h-full relative rounded-[2rem] md:rounded-none overflow-hidden shadow-lg md:shadow-none border border-black/5 md:border-0">
                   
                   {/* Image */}
@@ -228,8 +213,10 @@ const FallingMemories = () => {
                 key={idx}
                 onClick={() => {
                    if (sliderRef.current) {
+                      const cardWidth = sliderRef.current.children[0].clientWidth;
+                      const gap = 24;
                       sliderRef.current.scrollTo({
-                         left: idx * sliderRef.current.clientWidth,
+                         left: idx * (cardWidth + gap),
                          behavior: 'smooth'
                       });
                    }
@@ -245,7 +232,7 @@ const FallingMemories = () => {
         </div>
       </div>
 
-      {/* --- LIGHTBOX --- */}
+      {/* --- PROFESSIONAL LIGHTBOX --- */}
       {currentItem && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center">
           
@@ -254,7 +241,7 @@ const FallingMemories = () => {
             onClick={handleClose}
           ></div>
 
-          {/* Controls */}
+          {/* Close Button */}
           <button 
             onClick={handleClose}
             className="absolute top-6 right-6 z-[100000] group flex items-center justify-center w-14 h-14 rounded-full bg-white/5 border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:border-[#B3907A] hover:rotate-90 hover:scale-110 shadow-lg"
@@ -262,6 +249,7 @@ const FallingMemories = () => {
             <X size={28} strokeWidth={1.5} />
           </button>
 
+          {/* Prev Button */}
           <button 
             onClick={handlePrev}
             className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-[100000] group flex items-center justify-center w-14 h-14 rounded-full bg-white/5 border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:border-[#B3907A] hover:scale-110 backdrop-blur-md shadow-lg"
@@ -269,6 +257,7 @@ const FallingMemories = () => {
             <ChevronLeft size={32} strokeWidth={1} />
           </button>
 
+          {/* Next Button */}
           <button 
             onClick={handleNext}
             className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-[100000] group flex items-center justify-center w-14 h-14 rounded-full bg-white/5 border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:border-[#B3907A] hover:scale-110 backdrop-blur-md shadow-lg"
