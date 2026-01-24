@@ -4,7 +4,9 @@ import { Menu, X } from 'lucide-react';
 const Navbar = ({ currentPage, setCurrentPage }) => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const navLinks = ['Home', 'About', 'Portfolio', 'Contact'];
+  
+  // Added 'Testimonials' to match your new page
+  const navLinks = ['Home', 'About', 'Portfolio', 'Testimonials', 'Contact'];
 
   // Scroll Detection
   useEffect(() => {
@@ -15,21 +17,23 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
 
   // Lock body scroll when mobile menu is active
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : 'unset';
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
   }, [menuOpen]);
 
-  // --- DYNAMIC STYLES ---
+  // --- DYNAMIC STYLES (FIXED) ---
+  // If the menu is OPEN, we force dark text so it's visible against the light overlay
+  const isDarkText = scrolled || menuOpen;
 
-  // 1. Text Colors
-  // Scrolled: Dark Grey (#3a3a3a)
-  // Top: White
-  const textColor = scrolled ? 'text-[#3a3a3a]' : 'text-white';
-  const logoAccent = scrolled ? 'text-[#B3907A]' : 'text-[#EFE7DA]';
-  const hoverColor = scrolled ? 'group-hover:text-[#B3907A]' : 'group-hover:text-white/80';
+  const textColor = isDarkText ? 'text-[#3a3a3a]' : 'text-white';
+  const logoAccent = isDarkText ? 'text-[#B3907A]' : 'text-[#EFE7DA]';
+  const hoverColor = isDarkText ? 'group-hover:text-[#B3907A]' : 'group-hover:text-white/80';
 
-  // 2. Book Now Button Logic
-  // We use !bg-transparent to ensure we override your global button styles
-  const btnBorder = scrolled 
+  // Button Border Logic
+  const btnBorder = isDarkText
     ? 'border-[#3a3a3a] text-[#3a3a3a] hover:bg-[#3a3a3a] hover:text-white' 
     : 'border-white/40 text-white hover:bg-white hover:text-[#3a3a3a]';
 
@@ -48,7 +52,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
           
           {/* --- LOGO --- */}
           <button 
-            className="cursor-pointer z-50 group focus:outline-none !bg-transparent border-none p-0" 
+            className="cursor-pointer z-50 group focus:outline-none !bg-transparent border-none p-0 relative" 
             onClick={() => { setCurrentPage('Home'); setMenuOpen(false); }}
           >
             <h1 className={`font-serif text-2xl font-bold tracking-wide transition-colors duration-500 ${textColor}`}>
@@ -64,25 +68,21 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
                 <button
                   key={link}
                   onClick={() => setCurrentPage(link)}
-                  // !bg-transparent fixes the "White Box" bug
                   className="relative px-5 py-2 group focus:outline-none !bg-transparent border-none"
                 >
                   {/* Pill Background Animation */}
                   <span className={`
                     absolute inset-0 rounded-full transition-all duration-500 ease-out
                     ${isActive 
-                      ? 'bg-[#B3907A] opacity-100 scale-100' // Active: Solid Gold
-                      : 'bg-white/10 opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100' // Hover: Subtle Glass
+                      ? 'bg-[#B3907A] opacity-100 scale-100' 
+                      : 'bg-white/10 opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100'
                     }
                   `}></span>
 
                   {/* Text */}
                   <span className={`
                     relative z-10 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors duration-300
-                    ${isActive 
-                      ? 'text-white' 
-                      : `${textColor} ${hoverColor}`
-                    }
+                    ${isActive ? 'text-white' : `${textColor} ${hoverColor}`}
                   `}>
                     {link}
                   </span>
@@ -94,7 +94,6 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             <div className="pl-6">
               <button 
                 onClick={() => setCurrentPage('Contact')}
-                // !bg-transparent fixes the "White Box" bug here too
                 className={`
                   !bg-transparent px-7 py-3 text-[10px] font-bold uppercase tracking-widest border transition-all duration-500 rounded-sm
                   ${btnBorder}
@@ -105,13 +104,14 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             </div>
           </div>
 
-          {/* --- MOBILE TOGGLE --- */}
+          {/* --- MOBILE TOGGLE (FIXED) --- */}
           <button 
             onClick={() => setMenuOpen(!menuOpen)} 
             className={`
-              md:hidden z-50 focus:outline-none !bg-transparent border-none p-2 transition-colors duration-300 
-              ${menuOpen ? 'text-[#3a3a3a]' : textColor}
+              md:hidden z-50 focus:outline-none !bg-transparent border-none p-2 transition-colors duration-300 relative
+              ${textColor} 
             `}
+            aria-label="Toggle Menu"
           >
             {menuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
@@ -131,7 +131,6 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             <button 
               key={link} 
               onClick={() => { setCurrentPage(link); setMenuOpen(false); }} 
-              // Added delay for a staggered "waterfall" effect
               style={{ transitionDelay: `${idx * 100}ms` }}
               className={`
                 !bg-transparent border-none font-serif text-4xl md:text-5xl transition-all duration-500 transform
