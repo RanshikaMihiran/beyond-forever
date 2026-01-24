@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 
+// --- NAVBAR ---
 const Navbar = ({ currentPage, setCurrentPage }) => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  
-  const navLinks = ['Home', 'About', 'Portfolio', 'Testimonials', 'Contact'];
+  const navLinks = ['Home', 'About', 'Portfolio', 'Contact'];
 
-  // Scroll Detection
+  // Handle Scroll logic
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Lock body scroll when mobile menu is active
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = 'hidden';
@@ -23,126 +23,81 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
     }
   }, [menuOpen]);
 
-  // --- DYNAMIC LOGIC ---
+  // --- LIQUID GLASS STYLES ---
   
-  // 1. Determine if we need "Dark Mode" styles for the navbar
-  // We switch to dark text if:
-  // A) The user has scrolled down OR
-  // B) The mobile menu is currently OPEN (so we can see it against the beige background)
-  const isDarkState = scrolled || menuOpen;
+  // Scrolled: High blur, saturation, semi-transparent white, subtle border
+  // Top: Completely transparent
+  const navGlassStyle = scrolled 
+    ? 'bg-[#F5F5EB]/60 backdrop-blur-xl backdrop-saturate-150 shadow-[0_4px_30px_rgba(0,0,0,0.03)] border-b border-white/40 py-4' 
+    : 'bg-transparent py-8';
 
-  // 2. Colors based on state
-  const textColor = isDarkState ? 'text-[#3a3a3a]' : 'text-white';
-  const logoAccent = isDarkState ? 'text-[#B3907A]' : 'text-[#EFE7DA]';
-  const hoverColor = isDarkState ? 'group-hover:text-[#B3907A]' : 'group-hover:text-white/80';
+  const textColor = scrolled || menuOpen ? 'text-[#3a3a3a]' : 'text-white';
+  const logoColor = scrolled || menuOpen ? 'text-[#B3907A]' : 'text-[#EFE7DA]';
   
-  // 3. Background Logic
-  // IMPORTANT: If menu is open, force background to solid beige immediately
-  const navbarBackground = isDarkState 
-    ? 'bg-[#F5F5EB]/95 backdrop-blur-md shadow-sm border-b border-[#3a3a3a]/5' 
-    : 'bg-transparent';
-
-  // 4. Button Border Logic
-  const btnBorder = isDarkState
+  // Button morphs from glass outline to solid/dark outline
+  const btnBorder = scrolled 
     ? 'border-[#3a3a3a] text-[#3a3a3a] hover:bg-[#3a3a3a] hover:text-white' 
-    : 'border-white/40 text-white hover:bg-white hover:text-[#3a3a3a]';
+    : 'border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-[#3a3a3a]';
 
   return (
     <>
-      <nav 
-        className={`
-          fixed top-0 left-0 w-full z-[100] transition-all duration-300 ease-in-out py-4
-          ${navbarBackground}
-        `}
-      >
+      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${navGlassStyle}`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           
-          {/* --- LOGO --- */}
-          <button 
-            className="cursor-pointer z-[100] group focus:outline-none !bg-transparent border-none p-0 relative" 
-            onClick={() => { setCurrentPage('Home'); setMenuOpen(false); }}
-          >
-            <h1 className={`font-serif text-2xl font-bold tracking-wide transition-colors duration-300 ${textColor}`}>
-              B&F <span className={`font-sans font-light text-[10px] tracking-[0.3em] ml-1 transition-colors duration-300 ${logoAccent}`}>STUDIO</span>
+          {/* LOGO */}
+          <div className="cursor-pointer z-50 group" onClick={() => { setCurrentPage('Home'); setMenuOpen(false); }}>
+            <h1 className={`font-serif text-2xl font-bold tracking-wider transition-colors duration-500 ${textColor}`}>
+              B&F <span className={`font-sans font-light text-xs tracking-[0.3em] ml-1 transition-colors duration-500 ${logoColor}`}>STUDIO</span>
             </h1>
-          </button>
-
-          {/* --- DESKTOP NAVIGATION --- */}
-          <div className="hidden md:flex items-center gap-2">
-            {navLinks.map((link) => {
-              const isActive = currentPage === link;
-              return (
-                <button
-                  key={link}
-                  onClick={() => setCurrentPage(link)}
-                  className="relative px-5 py-2 group focus:outline-none !bg-transparent border-none"
-                >
-                  <span className={`
-                    absolute inset-0 rounded-full transition-all duration-500 ease-out
-                    ${isActive 
-                      ? 'bg-[#B3907A] opacity-100 scale-100' 
-                      : 'bg-white/10 opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100'
-                    }
-                  `}></span>
-
-                  <span className={`
-                    relative z-10 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors duration-300
-                    ${isActive ? 'text-white' : `${textColor} ${hoverColor}`}
-                  `}>
-                    {link}
-                  </span>
-                </button>
-              );
-            })}
-
-            <div className="pl-6">
-              <button 
-                onClick={() => setCurrentPage('Contact')}
-                className={`
-                  !bg-transparent px-7 py-3 text-[10px] font-bold uppercase tracking-widest border transition-all duration-500 rounded-sm
-                  ${btnBorder}
-                `}
-              >
-                Book Now
-              </button>
-            </div>
           </div>
 
-          {/* --- MOBILE TOGGLE --- */}
-          {/* Ensure z-index is highest and text color updates immediately */}
+          {/* DESKTOP LINKS */}
+          <div className="hidden md:flex items-center space-x-8">
+            {navLinks.map((link) => (
+              <button
+                key={link}
+                onClick={() => setCurrentPage(link)}
+                className={`relative px-5 py-2 group transition-all duration-500 rounded-full outline-none focus:outline-none`}
+              >
+                {/* Active/Hover State: Subtle "Wet" Highlight */}
+                <span className={`absolute inset-0 rounded-full transition-all duration-500 
+                  ${currentPage === link 
+                    ? 'bg-[#B3907A]/10 shadow-[inset_0_0_10px_rgba(179,144,122,0.2)]' // Soft inner glow when active
+                    : 'bg-transparent group-hover:bg-white/20' // Subtle glass sheen on hover
+                  }`}>
+                </span>
+                
+                <span className={`relative z-10 text-xs font-bold uppercase tracking-widest transition-colors duration-300 
+                  ${currentPage === link ? 'text-[#B3907A]' : `${textColor} group-hover:text-[#B3907A]`}`}>
+                  {link}
+                </span>
+              </button>
+            ))}
+            
+            <button 
+              onClick={() => setCurrentPage('Contact')}
+              className={`outline-none focus:outline-none px-6 py-3 text-[10px] font-bold uppercase tracking-widest border transition-all duration-500 hover:shadow-lg ${btnBorder}`}
+            >
+              Book Now
+            </button>
+          </div>
+
+          {/* MOBILE TOGGLE */}
           <button 
             onClick={() => setMenuOpen(!menuOpen)} 
-            className={`
-              md:hidden relative z-[100] p-2 focus:outline-none !bg-transparent border-none transition-colors duration-300
-              ${textColor} 
-            `}
-            aria-label={menuOpen ? "Close Menu" : "Open Menu"}
+            className={`md:hidden z-50 bg-transparent outline-none focus:outline-none transition-colors duration-300 ${menuOpen ? 'text-[#3a3a3a]' : textColor}`}
           >
             {menuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </nav>
       
-      {/* --- MOBILE MENU OVERLAY --- */}
-      <div 
-        className={`
-          fixed inset-0 h-[100vh] bg-[#F5F5EB] z-[90] flex flex-col justify-center items-center 
-          transition-all duration-500 ease-in-out
-          ${menuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-5'}
-        `}
-      >
+      {/* MOBILE MENU (Also Liquid Glass) */}
+      <div className={`fixed inset-0 z-40 bg-[#F5F5EB]/80 backdrop-blur-3xl backdrop-saturate-150 flex flex-col justify-center items-center transition-all duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] 
+        ${menuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
         <div className="flex flex-col space-y-8 text-center">
-          {navLinks.map((link, idx) => (
-            <button 
-              key={link} 
-              onClick={() => { setCurrentPage(link); setMenuOpen(false); }} 
-              style={{ transitionDelay: `${idx * 50}ms` }}
-              className={`
-                !bg-transparent border-none font-serif text-4xl transition-all duration-500 transform
-                ${menuOpen ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}
-                ${currentPage === link ? 'text-[#B3907A] italic' : 'text-[#3a3a3a] hover:text-[#B3907A]'}
-              `}
-            >
+          {navLinks.map((link) => (
+            <button key={link} onClick={() => { setCurrentPage(link); setMenuOpen(false); }} className="bg-transparent outline-none focus:outline-none font-serif text-4xl text-[#3a3a3a] hover:text-[#B3907A] hover:italic transition-all duration-300">
               {link}
             </button>
           ))}
