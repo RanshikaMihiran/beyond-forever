@@ -24,7 +24,7 @@ const FallingMemories = () => {
     setSelectedIndex(null);
   }, []);
 
-  // --- KEYBOARD & SCROLL LOCK ---
+  // --- SCROLL LOCK ---
   useEffect(() => {
     if (selectedIndex !== null) {
       document.body.style.overflow = 'hidden';
@@ -44,154 +44,144 @@ const FallingMemories = () => {
   const currentItem = selectedIndex !== null ? displayItems[selectedIndex] : null;
 
   return (
-    <section className="relative bg-white py-20 px-0 md:px-0 min-h-[80vh] flex flex-col justify-center overflow-hidden">
+    <section className="relative bg-white py-20 min-h-[80vh] flex flex-col justify-center">
       
-      {/* HEADER (Fixed: Left Aligned on Mobile) */}
+      {/* HEADER */}
       <div className="max-w-7xl mx-auto px-6 mb-8 w-full flex flex-col md:flex-row justify-between items-start md:items-end">
         <div className="text-left">
            <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em]">Gallery</span>
            <h2 className="text-[#B3907A] font-serif text-4xl md:text-5xl mt-2 leading-tight">Captured Moments</h2>
         </div>
-        
-        {/* Mobile Swipe Hint */}
         <div className="flex items-center gap-2 text-[#B3907A]/60 mt-4 md:mt-0">
-           <span className="md:hidden text-[10px] font-bold uppercase tracking-widest animate-pulse flex items-center gap-2">
-              Swipe <ChevronRight size={12} />
-           </span>
+           <span className="md:hidden text-[10px] font-bold uppercase tracking-widest animate-pulse">Swipe &rarr;</span>
            <p className="text-[#B3907A]/40 text-xs hidden md:block">Click to expand.</p>
         </div>
       </div>
 
-      {/* GALLERY STRIP (Slider on Mobile, Accordion on Desktop) */}
-      <div 
-        className="
-          w-full max-w-[1400px] mx-auto 
-          flex 
-          overflow-x-auto md:overflow-visible /* Horizontal Scroll on Mobile */
-          snap-x snap-mandatory               /* Snap Effect */
-          h-[500px] md:h-[600px]              /* Height */
-          gap-4 md:gap-0                      /* Gaps on Mobile */
-          px-6 md:px-0                        /* Side Padding on Mobile */
-          pb-8 md:pb-0                        /* Bottom padding for scrollbar/shadow */
-          scrollbar-hide                      /* Hide scrollbar */
-        "
-      >
-        {displayItems.map((item, index) => {
-          const isActive = hoveredIndex === index;
-
-          return (
-          <div 
-            key={index}
-            onMouseEnter={() => setHoveredIndex(index)}
-            onClick={() => setSelectedIndex(index)}
-            className={`
-              relative overflow-hidden cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group
-              
-              /* MOBILE SLIDER STYLES */
-              flex-shrink-0        /* Don't shrink on mobile */
-              w-[85vw]             /* Fixed width on mobile (85% of screen) */
-              h-full               /* Full container height */
-              snap-center          /* Snap to center */
-              rounded-[20px]       /* Rounded cards */
-              shadow-lg            /* Shadow for depth */
-
-              /* DESKTOP RESET & ACCORDION */
-              md:flex-shrink       /* Allow shrink on desktop */
-              md:w-auto            /* Auto width for flex-grow */
-              md:rounded-none      /* Square edges */
-              md:shadow-none       
-              md:border-r border-white/10 last:border-0
-              
-              /* Desktop Flex Logic */
-              ${isActive ? 'md:flex-[3]' : 'md:flex-1'}
-            `}
-          >
-            {/* Main Image */}
-            <img 
-              src={item.src} 
-              alt={item.label} 
-              className={`
-                absolute inset-0 w-full h-full object-cover transition-all duration-700
-                /* Desktop Hover Effect */
-                ${isActive ? 'md:grayscale-0 md:scale-105 md:brightness-100' : 'md:grayscale md:brightness-[0.4] md:group-hover:brightness-75'}
-                /* Mobile: Always colorful */
-                grayscale-0 brightness-100
-              `} 
-            />
-
-            {/* Gradient Overlay */}
-            <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent transition-opacity duration-500 
-                ${isActive ? 'opacity-0' : 'opacity-0 md:group-hover:opacity-100'}`}></div>
-            
-            {/* Mobile Gradient (Always visible for text readability) */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent md:hidden"></div>
-
-            {/* Maximize Icon */}
-            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 z-20
-                ${isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-50 group-hover:scale-75 group-hover:opacity-50'}`}>
-               <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-xl">
-                 <Maximize2 className="text-white w-5 h-5" />
-               </div>
-            </div>
-
-            {/* Content Details */}
-            <div className={`absolute inset-0 p-6 md:p-8 flex flex-col justify-end md:justify-between transition-opacity duration-500 delay-100
-                ${isActive ? 'opacity-100' : 'opacity-100 md:opacity-0 group-hover:opacity-100'}`}>
-              <div className="hidden md:flex justify-between items-start">
-                <span className="text-white/50 font-mono text-xs">0{index + 1}</span>
-                <ArrowUpRight className="text-white w-4 h-4" />
-              </div>
-              <div className={`transform transition-transform duration-500 ${isActive ? 'translate-y-0' : 'translate-y-0 md:translate-y-4 group-hover:translate-y-0'}`}>
-                <h3 className="text-white font-serif text-3xl md:text-4xl italic drop-shadow-md">{item.label}</h3>
-                <p className="text-[#B3907A] text-[10px] uppercase tracking-widest mt-2 hidden md:block">Tap to Open</p>
-              </div>
-            </div>
-
-            {/* Vertical Label (Desktop Only) */}
-            <div className={`hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-90deg] whitespace-nowrap transition-opacity duration-300 pointer-events-none z-10 
-                ${isActive ? 'opacity-0' : 'opacity-100'}`}>
-               <span className="text-white/50 text-xs font-bold uppercase tracking-[0.3em] backdrop-blur-sm px-3 py-1 bg-black/40 rounded-full border border-white/5">{item.label}</span>
-            </div>
-          </div>
-          );
-        })}
+      {/* --- GALLERY SLIDER CONTAINER --- */}
+      <div className="w-full max-w-[1400px] mx-auto">
         
-        {/* Spacer for last item padding on mobile */}
-        <div className="w-2 flex-shrink-0 md:hidden"></div>
+        {/* SCROLL AREA */}
+        <div 
+          className="
+            flex 
+            overflow-x-auto              /* Force Horizontal Scroll */
+            snap-x snap-mandatory        /* Snap to center */
+            gap-6                        /* Space between cards */
+            px-6                         /* Side padding */
+            pb-10                        /* Bottom padding */
+            touch-pan-x                  /* smooth touch gesture */
+            md:overflow-visible          /* Reset for desktop */
+            md:gap-0 
+            md:px-0 
+            md:pb-0 
+            md:h-[600px] 
+            scrollbar-hide
+          "
+        >
+          {displayItems.map((item, index) => {
+            const isActive = hoveredIndex === index;
+
+            return (
+              <div 
+                key={index}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onClick={() => setSelectedIndex(index)}
+                className={`
+                  relative overflow-hidden cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group
+                  
+                  /* --- MOBILE CARD STYLES --- */
+                  flex-shrink-0           /* CRITICAL: Don't let flex shrink items */
+                  min-w-[85vw]            /* CRITICAL: Force 85% width on mobile */
+                  h-[500px]               /* Fixed tall height */
+                  snap-center             /* Lock to center */
+                  rounded-[2rem]          /* Rounded */
+                  shadow-lg
+                  border border-black/5
+
+                  /* --- DESKTOP RESET --- */
+                  md:flex-shrink          /* Allow flex shrink */
+                  md:min-w-0              /* Reset min-width */
+                  md:w-auto               /* Auto width */
+                  md:h-full               /* Full height */
+                  md:rounded-none 
+                  md:shadow-none
+                  md:border-0 md:border-r border-white/10 last:border-0
+
+                  /* Desktop Accordion Expansion */
+                  ${isActive ? 'md:flex-[3]' : 'md:flex-1'}
+                `}
+              >
+                {/* Image */}
+                <img 
+                  src={item.src} 
+                  alt={item.label} 
+                  className={`
+                    absolute inset-0 w-full h-full object-cover transition-all duration-700
+                    /* Desktop Hover State */
+                    ${isActive ? 'md:grayscale-0 md:scale-105 md:brightness-100' : 'md:grayscale md:brightness-[0.4] md:group-hover:brightness-75'}
+                    /* Mobile: Always Visible */
+                    grayscale-0 brightness-100
+                  `} 
+                />
+
+                {/* Overlays */}
+                <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent transition-opacity duration-500 
+                    ${isActive ? 'opacity-0' : 'opacity-0 md:group-hover:opacity-100'}`}></div>
+                
+                {/* Mobile Text Gradient (Always visible) */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent md:hidden"></div>
+
+                {/* Icon */}
+                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 z-20
+                    ${isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-50 group-hover:scale-75 group-hover:opacity-50'}`}>
+                   <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-xl">
+                     <Maximize2 className="text-white w-5 h-5" />
+                   </div>
+                </div>
+
+                {/* Text Content */}
+                <div className={`absolute inset-0 p-8 flex flex-col justify-end md:justify-between transition-opacity duration-500 delay-100
+                    ${isActive ? 'opacity-100' : 'opacity-100 md:opacity-0 group-hover:opacity-100'}`}>
+                  
+                  <div className="hidden md:flex justify-between items-start">
+                    <span className="text-white/50 font-mono text-xs">0{index + 1}</span>
+                    <ArrowUpRight className="text-white w-4 h-4" />
+                  </div>
+                  
+                  <div className={`transform transition-transform duration-500 ${isActive ? 'translate-y-0' : 'translate-y-0 md:translate-y-4 group-hover:translate-y-0'}`}>
+                    <h3 className="text-white font-serif text-3xl md:text-4xl italic drop-shadow-md">{item.label}</h3>
+                    <p className="text-[#B3907A] text-[10px] uppercase tracking-widest mt-2 hidden md:block">Tap to Open</p>
+                  </div>
+                </div>
+
+                {/* Vertical Label (Desktop Only) */}
+                <div className={`hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-90deg] whitespace-nowrap transition-opacity duration-300 pointer-events-none z-10 
+                    ${isActive ? 'opacity-0' : 'opacity-100'}`}>
+                   <span className="text-white/50 text-xs font-bold uppercase tracking-[0.3em] backdrop-blur-sm px-3 py-1 bg-black/40 rounded-full border border-white/5">{item.label}</span>
+                </div>
+              </div>
+            );
+          })}
+          
+          {/* Spacer for right-side padding on mobile */}
+          <div className="w-2 flex-shrink-0 md:hidden"></div>
+        </div>
       </div>
 
-      {/* --- LIGHTBOX (UNCHANGED) --- */}
+      {/* --- LIGHTBOX (Standard) --- */}
       {currentItem && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center">
-          <div 
-            className="absolute inset-0 bg-black/95 backdrop-blur-xl animate-bg-fade"
-            onClick={handleClose}
-          ></div>
-
-          {/* CLOSE BUTTON */}
-          <button 
-            onClick={handleClose}
-            className="absolute top-6 right-6 z-[100000] w-12 h-12 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:border-[#B3907A] hover:rotate-90 hover:scale-105 cursor-pointer group"
-          >
+          <div className="absolute inset-0 bg-black/95 backdrop-blur-xl animate-bg-fade" onClick={handleClose}></div>
+          <button onClick={handleClose} className="absolute top-6 right-6 z-[100000] w-12 h-12 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:border-[#B3907A] hover:rotate-90">
             <X size={24} />
           </button>
-
-          {/* PREVIOUS BUTTON */}
-          <button 
-            onClick={handlePrev}
-            className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-[100000] w-12 h-12 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:border-[#B3907A] hover:scale-110 cursor-pointer"
-          >
+          <button onClick={handlePrev} className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-[100000] w-12 h-12 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:scale-110">
             <ChevronLeft size={28} strokeWidth={1.5} />
           </button>
-
-          {/* NEXT BUTTON */}
-          <button 
-            onClick={handleNext}
-            className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 z-[100000] w-12 h-12 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:border-[#B3907A] hover:scale-110 cursor-pointer"
-          >
+          <button onClick={handleNext} className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 z-[100000] w-12 h-12 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white transition-all duration-300 hover:bg-[#B3907A] hover:scale-110">
             <ChevronRight size={28} strokeWidth={1.5} />
           </button>
-
           <div className="relative z-[99999] p-4 md:p-12 w-full max-w-7xl flex flex-col items-center justify-center pointer-events-none">
             <img 
               key={selectedIndex} 
@@ -201,9 +191,7 @@ const FallingMemories = () => {
               onClick={(e) => e.stopPropagation()} 
             />
             <div className="mt-8 text-center animate-slide-up pointer-events-auto">
-              <h3 className="text-white font-serif text-3xl md:text-5xl italic mb-3 tracking-wide drop-shadow-lg">
-                {currentItem.label}
-              </h3>
+              <h3 className="text-white font-serif text-3xl md:text-5xl italic mb-3">{currentItem.label}</h3>
               <div className="flex items-center justify-center gap-4 opacity-70">
                 <span className="h-px w-10 bg-white/30"></span>
                 <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em]">
@@ -217,14 +205,8 @@ const FallingMemories = () => {
       )}
 
       <style>{`
-        /* Hide Scrollbar */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         @keyframes bg-fade { from { opacity: 0; } to { opacity: 1; } }
         @keyframes scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         @keyframes slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
