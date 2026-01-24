@@ -5,7 +5,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   
-  // Added 'Testimonials' to match your new page
+  // Navigation Links
   const navLinks = ['Home', 'About', 'Portfolio', 'Testimonials', 'Contact'];
 
   // Scroll Detection
@@ -24,15 +24,14 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
     }
   }, [menuOpen]);
 
-  // --- DYNAMIC STYLES (FIXED) ---
-  // If the menu is OPEN, we force dark text so it's visible against the light overlay
+  // --- DYNAMIC STYLES ---
+  // If menu is OPEN, text must be DARK so it is visible on the light background
   const isDarkText = scrolled || menuOpen;
 
   const textColor = isDarkText ? 'text-[#3a3a3a]' : 'text-white';
   const logoAccent = isDarkText ? 'text-[#B3907A]' : 'text-[#EFE7DA]';
   const hoverColor = isDarkText ? 'group-hover:text-[#B3907A]' : 'group-hover:text-white/80';
 
-  // Button Border Logic
   const btnBorder = isDarkText
     ? 'border-[#3a3a3a] text-[#3a3a3a] hover:bg-[#3a3a3a] hover:text-white' 
     : 'border-white/40 text-white hover:bg-white hover:text-[#3a3a3a]';
@@ -70,7 +69,6 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
                   onClick={() => setCurrentPage(link)}
                   className="relative px-5 py-2 group focus:outline-none !bg-transparent border-none"
                 >
-                  {/* Pill Background Animation */}
                   <span className={`
                     absolute inset-0 rounded-full transition-all duration-500 ease-out
                     ${isActive 
@@ -79,7 +77,6 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
                     }
                   `}></span>
 
-                  {/* Text */}
                   <span className={`
                     relative z-10 text-[11px] font-bold uppercase tracking-[0.2em] transition-colors duration-300
                     ${isActive ? 'text-white' : `${textColor} ${hoverColor}`}
@@ -90,7 +87,6 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
               );
             })}
 
-            {/* CTA Button */}
             <div className="pl-6">
               <button 
                 onClick={() => setCurrentPage('Contact')}
@@ -104,11 +100,12 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             </div>
           </div>
 
-          {/* --- MOBILE TOGGLE (FIXED) --- */}
+          {/* --- MOBILE TOGGLE (UPDATED) --- */}
+          {/* Added 'p-4' for bigger touch area and 'z-[60]' to force it on top */}
           <button 
             onClick={() => setMenuOpen(!menuOpen)} 
             className={`
-              md:hidden z-50 focus:outline-none !bg-transparent border-none p-2 transition-colors duration-300 relative
+              md:hidden relative z-[60] focus:outline-none !bg-transparent border-none p-4 -mr-4 transition-colors duration-300 cursor-pointer
               ${textColor} 
             `}
             aria-label="Toggle Menu"
@@ -121,7 +118,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
       {/* --- MOBILE MENU OVERLAY --- */}
       <div 
         className={`
-          fixed inset-0 bg-[#F5F5EB] z-40 flex flex-col justify-center items-center 
+          fixed inset-0 h-[100dvh] bg-[#F5F5EB] z-40 flex flex-col justify-center items-center 
           transition-all duration-700 ease-[cubic-bezier(0.77,0,0.175,1)]
           ${menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}
         `}
