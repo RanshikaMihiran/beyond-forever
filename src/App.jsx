@@ -1,5 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 
 // Import Components
 import Navbar from './components/layout/Navbar';
@@ -40,6 +41,7 @@ const App = () => {
       </main>
       
       <Footer setCurrentPage={setCurrentPage} />
+      <Analytics />
     </div>
   );
 };
