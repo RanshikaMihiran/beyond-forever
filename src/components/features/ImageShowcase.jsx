@@ -1,38 +1,60 @@
 import React, { useState } from 'react';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
-const PORTFOLIO_ITEMS = [
+export const PORTFOLIO_ITEMS = [
   { 
     id: 1, 
     title: "Amelia & James", 
     category: "Coastal Elopement", 
     year: "2025",
-    src: "/images/hero/Image 1.jpg" 
+    src: "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Night-Wedding%20/SHA02855.webp?updatedAt=1772638178985",
+    // The specific images for Amelia & James's gallery page
+    gallery: [
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Night-Wedding%20/SHA02855.webp?updatedAt=1772638178985",
+      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=2000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=2000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1583939000571-085e5bbbb2df?q=80&w=2000&auto=format&fit=crop",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Night-Wedding%20/SHA02855.webp?updatedAt=1772638178985"
+    ]
   },
   { 
     id: 2, 
     title: "The Golden Hour", 
     category: "Editorial Campaign", 
     year: "2025",
-    src: "/images/hero/Image 2.jpg" 
+    src: "https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2000&auto=format&fit=crop",
+    gallery: [
+      "https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2000&auto=format&fit=crop",
+    ]
   },
   { 
     id: 3, 
     title: "Midnight in Paris", 
     category: "Destination Wedding", 
     year: "2024",
-    src: "/images/hero/Image 3.jpg" 
+    src: "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=2000&auto=format&fit=crop",
+    gallery: [
+      "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=2000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=2000&auto=format&fit=crop",
+    ]
   },
   { 
     id: 4, 
     title: "Raw & Real", 
     category: "Black & White Series", 
     year: "2024",
-    src: "/images/hero/Image 4.jpg" 
+    src: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2000&auto=format&fit=crop",
+    gallery: [
+      "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2000&auto=format&fit=crop",
+    ]
   },
 ];
 
-const ImageShowcase = ({ setCurrentPage }) => {
+const ImageShowcase = ({ setCurrentPage, onProjectClick }) => {
   const [activeItem, setActiveItem] = useState(PORTFOLIO_ITEMS[0]);
 
   return (
@@ -50,13 +72,12 @@ const ImageShowcase = ({ setCurrentPage }) => {
               </h2>
            </div>
            
-           {/* DESKTOP VIEW ALL BUTTON */}
+           {/* VIEW ALL BUTTON */}
            <button 
              onClick={() => setCurrentPage('Portfolio')}
              className="hidden md:flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-[#1a1a1a] hover:text-[#B3907A] transition-colors group"
            >
              View All
-             {/* Removed background fill, now just changes border/text color */}
              <div className="w-8 h-8 rounded-full border border-[#1a1a1a]/20 flex items-center justify-center group-hover:border-[#B3907A] group-hover:text-[#B3907A] transition-all duration-300">
                 <ArrowRight size={12} />
              </div>
@@ -72,13 +93,12 @@ const ImageShowcase = ({ setCurrentPage }) => {
                 <div 
                   key={item.id}
                   onMouseEnter={() => setActiveItem(item)}
-                  onClick={() => setCurrentPage('Portfolio')}
+                  onClick={() => onProjectClick(item)} // <-- MAGIC CLICK TRIGGER FOR TEXT
                   className={`
                     group relative py-8 md:py-10 border-b border-[#1a1a1a]/10 cursor-pointer transition-all duration-300
                     ${activeItem.id === item.id ? 'pl-8' : 'pl-0 hover:pl-4'}
                   `}
                 >
-                   {/* Active Indicator Line (Left) */}
                    <div className={`
                       absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 bg-[#B3907A] transition-all duration-300
                       ${activeItem.id === item.id ? 'h-[60%]' : 'h-0'}
@@ -100,7 +120,6 @@ const ImageShowcase = ({ setCurrentPage }) => {
                          </h3>
                       </div>
 
-                      {/* Arrow Icon */}
                       <ArrowUpRight 
                         size={24} 
                         className={`
@@ -113,11 +132,11 @@ const ImageShowcase = ({ setCurrentPage }) => {
               ))}
            </div>
 
-           {/* RIGHT: THE PREVIEW (Sticky) */}
+           {/* RIGHT: DESKTOP IMAGE PREVIEW */}
            <div className="flex-1 hidden lg:block h-[600px] relative">
               <div 
                 className="sticky top-24 w-full h-full overflow-hidden rounded-[4px] cursor-pointer"
-                onClick={() => setCurrentPage('Portfolio')}
+                onClick={() => onProjectClick(activeItem)} // <-- MAGIC CLICK TRIGGER FOR DESKTOP IMAGE
               >
                  {PORTFOLIO_ITEMS.map((item) => (
                    <img 
@@ -133,31 +152,20 @@ const ImageShowcase = ({ setCurrentPage }) => {
                    />
                  ))}
                  
-                 {/* Overlay Text on Image */}
                  <div className="absolute bottom-0 left-0 p-8 z-20 pointer-events-none">
-                    <span className="text-white/60 text-[10px] font-bold uppercase tracking-widest block mb-2">
-                       Project Year
-                    </span>
-                    <span className="text-white font-serif text-2xl">
-                       {activeItem.year}
-                    </span>
+                    <span className="text-white/60 text-[10px] font-bold uppercase tracking-widest block mb-2">Project Year</span>
+                    <span className="text-white font-serif text-2xl">{activeItem.year}</span>
                  </div>
-
-                 {/* Dark Overlay for Text Readability */}
                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10 pointer-events-none"></div>
               </div>
            </div>
 
-           {/* MOBILE IMAGE (Only shows active item on mobile) */}
+           {/* MOBILE IMAGE PREVIEW */}
            <div 
              className="lg:hidden w-full h-[400px] rounded-[2rem] overflow-hidden relative shadow-xl cursor-pointer"
-             onClick={() => setCurrentPage('Portfolio')}
+             onClick={() => onProjectClick(activeItem)} // <-- MAGIC CLICK TRIGGER FOR MOBILE IMAGE
            >
-               <img 
-                 src={activeItem.src} 
-                 alt={activeItem.title} 
-                 className="w-full h-full object-cover"
-               />
+               <img src={activeItem.src} alt={activeItem.title} className="w-full h-full object-cover" />
                <div className="absolute inset-0 bg-black/20"></div>
                <div className="absolute bottom-6 left-6">
                  <span className="text-white/80 text-[10px] font-bold uppercase tracking-widest block mb-1">
@@ -168,7 +176,7 @@ const ImageShowcase = ({ setCurrentPage }) => {
 
         </div>
 
-        {/* --- MOBILE BOTTOM BUTTON --- */}
+        {/* MOBILE BOTTOM BUTTON */}
         <div className="mt-12 text-center md:hidden">
             <button 
               onClick={() => setCurrentPage('Portfolio')}

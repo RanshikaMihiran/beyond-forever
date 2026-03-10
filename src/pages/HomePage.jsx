@@ -30,7 +30,8 @@ const PACKAGES = [
   { title: "Destination", price: "$4,500", features: ["Multi-Day Coverage", "Pre-Wedding Shoot", "Cinema Film", "Luxury Album", "Travel Included"] }
 ];
 
-const HomePage = ({ setCurrentPage }) => {
+// ADDED onProjectClick HERE
+const HomePage = ({ setCurrentPage, onProjectClick }) => {
   return (
     <div className="animate-fade-in w-full overflow-hidden bg-[#F5F5EB]">
       
@@ -55,36 +56,21 @@ const HomePage = ({ setCurrentPage }) => {
         <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white/50 animate-bounce">
            <ChevronDown />
         </div>
-
-
       </ParallaxHero>
-
-    
 
       <FallingMemories />
 
       <StatsSection />
 
-      {/* <section className="py-20 bg-[#3a3a3a] text-[#F5F5EB]">
-         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
-            {STATS.map((stat, idx) => (
-              <div key={idx} className="flex flex-col items-center">
-                 <div className="text-[#B3907A] mb-4 opacity-80">{stat.icon}</div>
-                 <span className="font-serif text-4xl md:text-5xl mb-2">{stat.value}</span>
-                 <span className="text-xs uppercase tracking-widest opacity-50">{stat.label}</span>
-              </div>
-            ))}
-         </div>
-      </section> */}
-
       <AestheticSection />
 
-      <ImageShowcase setCurrentPage={setCurrentPage} />
-
-      
+      {/* PASSED onProjectClick DOWN TO THE COMPONENT HERE */}
+      <ImageShowcase 
+        setCurrentPage={setCurrentPage} 
+        onProjectClick={onProjectClick} 
+      />
 
       <PricingSection/>
-
       
       <CTASection/>
 

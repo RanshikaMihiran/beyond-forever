@@ -51,10 +51,10 @@ export const PORTFOLIO_PROJECTS = [
 
 export const FALLING_GALLERY = [
   { src: "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Preshoot/SHA05957.webp?updatedAt=1772645055696", label: "Isuru & Naduni" },
-  { src: "/images/portfolio/Image 2.jpg", label: "Pure Joy" },
-  { src: "/images/portfolio/Image 3.jpg", label: "Details" },
-  { src: "/images/portfolio/Image 4.jpg", label: "Forever" },
-  { src: "/images/portfolio/Image 5.jpg", label: "Quiet Moments" },
+  { src: "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Preshoot/12.webp?updatedAt=1772645058553", label: "Pure Joy" },
+  { src: "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Preshoot/SHA05352.webp?updatedAt=1772645047073", label: "Details" },
+  { src: "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Preshoot/9.webp?updatedAt=1772645019101", label: "Forever" },
+  { src: "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Preshoot/Untitled-5.webp?updatedAt=1772644993703", label: "Quiet Moments" },
   { src: "/images/portfolio/Image 6.jpg", label: "Celebration" },
   { src: "/images/portfolio/Image 1.jpg", label: "Us" },
   { src: "/images/portfolio/Image 3.jpg", label: "Laughter" },
