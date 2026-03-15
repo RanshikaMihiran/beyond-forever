@@ -1,5 +1,6 @@
 import React from 'react';
-import { ChevronDown, Aperture, Camera, Heart, Users, MapPin, Coffee, Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronDown, Aperture, Camera, Heart, Users, MapPin, Coffee } from 'lucide-react';
 import ParallaxHero from '../components/layout/ParallaxHero';
 import Button from '../components/ui/Button';
 import FallingMemories from '../components/features/FallingMemories';
@@ -8,30 +9,11 @@ import AestheticSection from '../components/features/AestheticSection';
 import PricingSection from '../components/features/PricingSection';
 import CTASection from '../components/features/CTASection';
 import ImageShowcase from '../components/features/ImageShowcase';
-import { HOME_HERO_IMAGES, DESTINATIONS  } from '../data/constants';
+import { HOME_HERO_IMAGES } from '../data/constants';
 
-// Data specifically for this page that involves Icons (kept here for easier JSX handling)
-const AESTHETIC = [
-  { title: "Editorial", desc: "Magazine-worthy poses with perfect lighting.", icon: <Aperture className="w-8 h-8"/> },
-  { title: "Candid", desc: "Unscripted moments of pure emotion.", icon: <Camera className="w-8 h-8"/> },
-  { title: "Timeless", desc: "Editing that never goes out of style.", icon: <Heart className="w-8 h-8"/> }
-];
+const HomePage = () => {
+  const navigate = useNavigate();
 
-const STATS = [
-  { label: "Weddings Captured", value: "150+", icon: <Camera /> },
-  { label: "Happy Couples", value: "300+", icon: <Users /> },
-  { label: "Destinations", value: "25+", icon: <MapPin /> },
-  { label: "Coffees Consumed", value: "Infinite", icon: <Coffee /> },
-];
-
-const PACKAGES = [
-  { title: "Elopement", price: "$1,500", features: ["4 Hours Coverage", "1 Photographer", "Online Gallery", "50 Retouched Photos"] },
-  { title: "Full Wedding", price: "$2,800", features: ["10 Hours Coverage", "2 Photographers", "Online Gallery", "Printed Album", "Drone Shots"], popular: true },
-  { title: "Destination", price: "$4,500", features: ["Multi-Day Coverage", "Pre-Wedding Shoot", "Cinema Film", "Luxury Album", "Travel Included"] }
-];
-
-// ADDED onProjectClick HERE
-const HomePage = ({ setCurrentPage, onProjectClick }) => {
   return (
     <div className="animate-fade-in w-full overflow-hidden bg-[#F5F5EB]">
       
@@ -49,8 +31,8 @@ const HomePage = ({ setCurrentPage, onProjectClick }) => {
             Sri Lanka's premier destination wedding & editorial studio.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <Button variant="primary" onClick={() => setCurrentPage('Portfolio')}>See The Stories</Button>
-            <Button variant="outline" onClick={() => setCurrentPage('Contact')}>Enquire Now</Button>
+            <Button variant="primary" onClick={() => navigate('/portfolio')}>See The Stories</Button>
+            <Button variant="outline" onClick={() => navigate('/contact')}>Enquire Now</Button>
           </div>
         </div>
         <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white/50 animate-bounce">
@@ -59,20 +41,14 @@ const HomePage = ({ setCurrentPage, onProjectClick }) => {
       </ParallaxHero>
 
       <FallingMemories />
-
       <StatsSection />
-
       <AestheticSection />
-
-      {/* PASSED onProjectClick DOWN TO THE COMPONENT HERE */}
-      <ImageShowcase 
-        setCurrentPage={setCurrentPage} 
-        onProjectClick={onProjectClick} 
-      />
-
-      <PricingSection/>
       
-      <CTASection/>
+      {/* ImageShowcase now handles its own navigation */}
+      <ImageShowcase />
+
+      <PricingSection />
+      <CTASection />
 
     </div>
   );
