@@ -7,6 +7,7 @@ import FallingMemories from '../components/features/FallingMemories';
 import StatsSection from '../components/features/StatsSection'; 
 import AestheticSection from '../components/features/AestheticSection';
 import CinematicVideo from '../components/features/CinematicVideo';
+import WeddingEvents from '../components/features/WeddingEvents';
 import PricingSection from '../components/features/PricingSection';
 import CTASection from '../components/features/CTASection';
 import ImageShowcase from '../components/features/ImageShowcase';
@@ -47,6 +48,8 @@ const HomePage = () => {
       
       {/* ImageShowcase now handles its own navigation */}
       <ImageShowcase />
+
+      <WeddingEvents />
 
       <CinematicVideo />
 
