@@ -4,19 +4,34 @@ import { Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  // React Router hooks
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
 
-  // Handle scroll effect for a transparent-to-solid navbar
+  // Handle scroll effect for background AND visibility
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+
+      // 1. Determine if we are at the top
+      setIsScrolled(currentScrollY > 50);
+
+      // 2. Determine scroll direction
+      if (currentScrollY > lastScrollY && currentScrollY > 150) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+
+      lastScrollY = currentScrollY;
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -28,16 +43,28 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed w-full z-[100] transition-all duration-500 ${isScrolled || mobileMenuOpen ? 'bg-[#F5F5EB] py-4 shadow-sm' : 'bg-transparent py-6'}`}>
+    <nav 
+      className={`fixed w-full z-[100] transition-all duration-500 ${
+        isVisible || mobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
+      } ${
+        isScrolled || mobileMenuOpen ? 'bg-[#F5F5EB] py-4 shadow-sm' : 'bg-transparent py-6'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         
         {/* LOGO */}
         <Link 
           to="/" 
           onClick={() => setMobileMenuOpen(false)}
-          className={`font-serif text-2xl tracking-widest transition-colors ${isScrolled || mobileMenuOpen ? 'text-[#3a3a3a]' : 'text-white drop-shadow-md'}`}
+          className="z-[101] relative flex items-center"
         >
-          BEYOND <span className="italic text-[#B3907A]">&</span> FOREVER
+          <img 
+            src="https://ik.imagekit.io/vaibbbrnqt/beyond-forever/logo/Pi7_beyond-foreve-logo-final-removebg-preview.png?updatedAt=1774167553000" 
+            alt="Beyond & Forever Logo" 
+            className={`h-16 md:h-20 w-auto object-contain transition-all duration-300 ${
+              isScrolled || mobileMenuOpen ? 'brightness-0 opacity-80' : 'drop-shadow-md hover:opacity-80'
+            }`}
+          />
         </Link>
 
         {/* --- DESKTOP LINKS --- */}
@@ -48,10 +75,11 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.path}
+                /* FIX: Explicitly added hover:text-white and hover:text-[#B3907A] to kill the blue color */
                 className={`px-5 py-2.5 rounded-[2rem] text-[10px] lg:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 ${
                   isActive 
                     ? (isScrolled ? 'bg-[#3a3a3a]/5 text-[#B3907A]' : 'bg-white/20 text-white border border-white/20 backdrop-blur-sm') 
-                    : (isScrolled ? 'text-[#3a3a3a] hover:bg-[#3a3a3a]/5' : 'text-white/90 hover:text-white hover:bg-white/10 backdrop-blur-sm')
+                    : (isScrolled ? 'text-[#3a3a3a] hover:bg-[#3a3a3a]/5 hover:text-[#B3907A]' : 'text-[#E1DACA] hover:text-white hover:bg-white/20 backdrop-blur-sm')
                 }`}
               >
                 {link.name}
@@ -74,7 +102,7 @@ const Navbar = () => {
 
         {/* MOBILE MENU TOGGLE */}
         <button 
-          className={`md:hidden outline-none transition-colors ${isScrolled || mobileMenuOpen ? 'text-[#3a3a3a]' : 'text-white'}`}
+          className={`md:hidden outline-none transition-colors z-[101] ${isScrolled || mobileMenuOpen ? 'text-[#3a3a3a]' : 'text-white'}`}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -88,7 +116,7 @@ const Navbar = () => {
             <Link
               key={link.name}
               to={link.path}
-              onClick={() => setMobileMenuOpen(false)} // Closes menu when clicked
+              onClick={() => setMobileMenuOpen(false)} 
               className={`text-sm font-bold uppercase tracking-[0.2em] transition-colors ${
                 currentPath === link.path ? 'text-[#B3907A]' : 'text-[#3a3a3a] hover:text-[#B3907A]'
               }`}

@@ -16,7 +16,12 @@ const Footer = () => {
         
         {/* BRAND & SOCIALS */}
         <div className="col-span-1 md:col-span-2 pr-10">
-          <h2 className="font-serif text-4xl mb-6 text-white">Beyond & Forever</h2>
+          {/* INCREASED LOGO SIZE: Bumped up to h-28 for mobile and h-40 for desktop */}
+          <img 
+            src="https://ik.imagekit.io/vaibbbrnqt/beyond-forever/logo/Pi7_beyond-foreve-logo-final-removebg-preview.png" 
+            alt="Beyond & Forever Logo" 
+            className="h-28 md:h-40 w-auto object-contain mb-8" 
+          />
           <p className="text-[#E1DACA] text-sm leading-loose font-light mb-8 max-w-md">
             Sri Lanka's premier destination wedding & editorial studio.
           </p>
@@ -35,7 +40,6 @@ const Footer = () => {
               <li key={link.name}>
                 <Link 
                   to={link.path} 
-                  /* ADDED text-[#E1DACA] HERE to fix the blue link issue */
                   className="block w-fit bg-transparent text-[#E1DACA] hover:text-[#B3907A] transition-all duration-300 hover:translate-x-2 cursor-pointer outline-none ring-0 border-none"
                   style={{ WebkitTapHighlightColor: 'transparent' }}
                 >
