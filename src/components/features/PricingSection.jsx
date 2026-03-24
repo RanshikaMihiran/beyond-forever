@@ -91,7 +91,7 @@ const PricingSection = ({ setCurrentPage }) => {
            <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em] block mb-4">Investment</span>
            <h2 className="font-serif text-4xl md:text-5xl text-[#3a3a3a] mb-6">The Collections</h2>
            <p className="text-[#3a3a3a]/60 font-light leading-relaxed text-sm md:text-base">
-             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision [cite: 5-23, 24-57, 58-77, 78-128].
+             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision.
            </p>
         </div>
 
