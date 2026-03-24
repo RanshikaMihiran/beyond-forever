@@ -90,29 +90,19 @@ const PricingSection = ({ setCurrentPage }) => {
            <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em] block mb-4">Investment</span>
            <h2 className="font-serif text-4xl md:text-5xl text-[#3a3a3a] mb-6">The Collections</h2>
            <p className="text-[#3a3a3a]/60 font-light leading-relaxed text-sm md:text-base">
-             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision [cite: 5-23, 24-57, 58-77, 78-128].
+             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision.
            </p>
         </div>
 
-        {/* --- BULLETPROOF MOBILE TABS --- */}
+        {/* --- BULLETPROOF TABS: 2x2 Grid on Mobile, Row on Desktop --- */}
         <div className="w-full mb-10 md:mb-16">
-          <div className="md:hidden flex justify-center mb-4">
-            <span className="text-[#B3907A]/80 text-[9px] uppercase tracking-widest font-bold animate-pulse">Swipe to explore packages &rarr;</span>
-          </div>
-          
-          {/* Flattened track: No nested centering on mobile, pure horizontal scrolling */}
-          <div 
-            className="flex overflow-x-auto md:flex-wrap md:justify-center gap-3 pb-4 scrollbar-hide snap-x" 
-            style={{ WebkitOverflowScrolling: 'touch' }}
-          >
-            {/* Left invisible spacer to prevent clipping on mobile */}
-            <div className="w-1 md:hidden flex-shrink-0"></div>
-
+          <div className="grid grid-cols-2 md:flex md:flex-wrap md:justify-center gap-2 md:gap-4 max-w-sm md:max-w-none mx-auto">
             {Object.keys(PRICING_DATA).map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveTab(category)}
-                className={`flex-shrink-0 snap-center px-7 md:px-8 py-3.5 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 outline-none whitespace-nowrap cursor-pointer ${
+                /* Reduced mobile font size to text-[9px] so longer text fits nicely in the 2x2 grid */
+                className={`px-2 py-4 md:px-8 md:py-3.5 rounded-full text-[9px] md:text-[11px] font-bold uppercase tracking-[0.1em] md:tracking-[0.15em] transition-all duration-300 outline-none cursor-pointer text-center ${
                   activeTab === category
                     ? 'bg-[#3a3a3a] text-white shadow-md border border-[#3a3a3a]' 
                     : 'bg-white border border-[#3a3a3a]/10 text-[#3a3a3a]/60 hover:text-[#3a3a3a] hover:shadow-sm'
@@ -121,9 +111,6 @@ const PricingSection = ({ setCurrentPage }) => {
                 {category}
               </button>
             ))}
-
-            {/* Right invisible spacer to prevent clipping on mobile */}
-            <div className="w-1 md:hidden flex-shrink-0"></div>
           </div>
         </div>
 
@@ -142,7 +129,7 @@ const PricingSection = ({ setCurrentPage }) => {
                      <p className="text-[#3a3a3a]/50 text-sm font-light leading-relaxed min-h-[40px]">{pkg.desc}</p>
                    </div>
 
-                   {/* Divider line */}
+                   {/* Divider line exactly like your image */}
                    <hr className="w-full border-t border-[#3a3a3a]/10 mb-8" />
 
                    {/* Features List */}
@@ -176,11 +163,8 @@ const PricingSection = ({ setCurrentPage }) => {
 
       </div>
 
-      {/* Tailwind Utilities for Scrollbar hiding & Animations */}
+      {/* Tailwind Utilities for Animations */}
       <style>{`
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(15px); }
           to { opacity: 1; transform: translateY(0); }
