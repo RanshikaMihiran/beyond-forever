@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Check, Star } from 'lucide-react';
-import Button from '../ui/Button';
+import { Check } from 'lucide-react';
 
-// Synthesized data from the Beyond & Forever 2026/2027 Price Guide (Prices Removed)
+// Packages synthesized from the Beyond & Forever 2026/2027 Price Guide (Prices Removed)
 const PRICING_DATA = {
   "One Day Wedding": [
     { 
@@ -87,32 +86,29 @@ const PricingSection = ({ setCurrentPage }) => {
   const [activeTab, setActiveTab] = useState("One Day Wedding");
 
   return (
-    <section className="py-24 md:py-32 px-4 md:px-6 bg-[#F5F5EB] overflow-hidden">
-      <div className="max-w-[1400px] mx-auto">
+    <section className="py-20 md:py-32 bg-[#F5F5EB] overflow-hidden font-sans">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6">
         
         {/* --- SECTION HEADER --- */}
-        <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16 px-4">
+        <div className="text-center max-w-2xl mx-auto mb-10 md:mb-16">
            <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em] block mb-4">Investment</span>
            <h2 className="font-serif text-4xl md:text-5xl text-[#3a3a3a] mb-6">The Collections</h2>
            <p className="text-[#3a3a3a]/60 font-light leading-relaxed text-sm md:text-base">
-             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages with no hidden fees.
+             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision [cite: 5-23, 24-57, 58-77, 78-128].
            </p>
         </div>
 
-       {/* --- CATEGORY TABS (Swipeable on Mobile) --- */}
-        <div className="relative z-20 w-full mb-12 md:mb-16">
-          <div className="flex overflow-x-auto md:flex-wrap md:justify-center gap-4 md:gap-5 pb-4 md:pb-0 px-4 scrollbar-hide snap-x">
+        {/* --- FUNCTIONAL MOBILE TABS --- */}
+        <div className="relative z-20 w-full mb-10 md:mb-16">
+          <div className="flex overflow-x-auto md:flex-wrap md:justify-center gap-3 md:gap-4 pb-4 px-2 scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
             {Object.keys(PRICING_DATA).map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveTab(category)}
-                /* INCREASED PADDING: px-8 makes the pills wider and more elegant like your image */
-                className={`flex-shrink-0 snap-center px-8 py-3.5 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 outline-none ${
+                className={`flex-shrink-0 px-6 md:px-8 py-3.5 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 outline-none cursor-pointer ${
                   activeTab === category
-                    // ACTIVE STATE: Dark charcoal, white text, soft medium shadow
                     ? 'bg-[#3a3a3a] text-white shadow-md border border-[#3a3a3a]' 
-                    // INACTIVE STATE: Almost solid white, very faint border, grey text
-                    : 'bg-white/90 border border-[#3a3a3a]/10 text-[#3a3a3a]/60 hover:bg-white hover:text-[#3a3a3a] hover:shadow-sm'
+                    : 'bg-white border border-[#3a3a3a]/10 text-[#3a3a3a]/60 hover:text-[#3a3a3a] hover:shadow-sm'
                 }`}
               >
                 {category}
@@ -121,74 +117,55 @@ const PricingSection = ({ setCurrentPage }) => {
           </div>
           
           {/* Mobile Swipe Indicator */}
-          <div className="md:hidden flex justify-center mt-2">
-            <span className="text-[#B3907A]/60 text-[8px] uppercase tracking-widest font-bold">Swipe to explore</span>
+          <div className="md:hidden flex justify-center mt-1">
+            <span className="text-[#B3907A]/60 text-[9px] uppercase tracking-widest font-bold">Swipe to explore</span>
           </div>
         </div>
 
-        {/* --- PRICING GRID --- */}
-        {/* We use key={activeTab} to force React to re-trigger the fade-in animation every time the tab changes */}
-        <div key={activeTab} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6 lg:gap-8 items-stretch">
+        {/* --- CARD GRID LAYOUT --- */}
+        <div key={activeTab} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6 lg:gap-8 animate-fade-in">
            {PRICING_DATA[activeTab].map((pkg, idx) => {
-             const isDark = pkg.popular;
-             
              return (
                <div 
                  key={idx} 
-                 className={`
-                   relative p-6 sm:p-8 md:p-10 rounded-2xl transition-all duration-500 flex flex-col h-full animate-fade-in
-                   ${isDark 
-                     ? 'bg-[#3a3a3a] text-white shadow-2xl xl:-translate-y-4 z-10 border border-[#B3907A]/30' 
-                     : 'bg-white text-[#3a3a3a] border border-[#3a3a3a]/5 hover:shadow-xl hover:-translate-y-2' 
-                   }
-                 `}
-                 // Staggered animation delay for a cascading load effect
+                 className="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-black/5 flex flex-col h-full transition-transform duration-300 hover:-translate-y-2"
                  style={{ animationDelay: `${idx * 100}ms` }}
                >
-                   {/* Popular Badge (Gold Pill) */}
-                   {pkg.popular && (
-                     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#B3907A] text-white text-[10px] font-bold uppercase px-5 py-1.5 tracking-[0.2em] rounded-full shadow-lg flex items-center gap-2 whitespace-nowrap z-20">
-                       <Star size={12} fill="currentColor" /> Most Loved
-                     </div>
-                   )}
-
-                   {/* Card Header (Prices removed, emphasis on title & desc) */}
-                   <div className={`text-center border-b pb-8 mb-8 ${isDark ? 'border-white/10' : 'border-[#3a3a3a]/10'}`}>
-                     <h3 className={`font-serif text-3xl md:text-4xl mb-4 ${isDark ? 'text-white' : 'text-[#3a3a3a]'}`}>{pkg.title}</h3>
-                     <p className={`text-sm font-light leading-relaxed min-h-[40px] ${isDark ? 'text-white/70' : 'text-[#3a3a3a]/60'}`}>{pkg.desc}</p>
+                   {/* Card Header */}
+                   <div className="text-center mb-6">
+                     <h3 className="font-serif text-3xl md:text-4xl text-[#3a3a3a] mb-3">{pkg.title}</h3>
+                     <p className="text-[#3a3a3a]/60 text-sm font-light leading-relaxed min-h-[40px]">{pkg.desc}</p>
                    </div>
 
+                   {/* Divider line exactly like your image */}
+                   <div className="w-full h-px bg-gray-100 mb-8"></div>
+
                    {/* Features List */}
-                   <ul className="space-y-4 mb-10 flex-grow">
+                   <ul className="flex flex-col gap-4 mb-10 flex-grow">
                       {pkg.features.map((f, i) => (
-                         <li key={i} className={`flex items-start gap-4 text-sm font-light ${isDark ? 'text-white/80' : 'text-[#3a3a3a]/80'}`}>
-                           <div className={`mt-0.5 min-w-[16px] text-[#B3907A]`}>
-                             <Check size={16} strokeWidth={2.5} />
-                           </div>
+                         <li key={i} className="flex items-start gap-3 text-sm font-light text-gray-600">
+                           <Check size={18} strokeWidth={2} className="text-[#B3907A] mt-0.5 flex-shrink-0" />
                            <span className="leading-relaxed">{f}</span>
                          </li>
                       ))}
                    </ul>
 
                    {/* Action Button */}
-                   <div className="text-center mt-auto pt-4">
-                     <Button 
-                       variant={isDark ? 'outline' : 'primary'} 
-                       className={`w-full justify-center py-4 text-xs tracking-widest ${isDark ? 'border-white/20 text-white hover:bg-white hover:text-[#3a3a3a]' : 'bg-[#1a1a1a] hover:bg-[#B3907A]'}`}
-                       onClick={() => setCurrentPage('Contact')}
-                     >
-                       Inquire for Details
-                     </Button>
-                   </div>
+                   <button 
+                     onClick={() => setCurrentPage('Contact')}
+                     className="w-full bg-[#B3907A] hover:bg-[#9a7b68] text-white rounded-xl py-4 text-[11px] font-bold uppercase tracking-widest transition-colors duration-300"
+                   >
+                     Inquire for Details
+                   </button>
                </div>
              );
            })}
         </div>
 
-        {/* Additional Note from PDF */}
-        <div className="text-center mt-20 max-w-3xl mx-auto px-4">
+        {/* --- FOOTNOTE --- */}
+        <div className="text-center mt-16 max-w-3xl mx-auto px-4">
           <p className="text-[#3a3a3a]/50 text-xs md:text-sm font-light leading-relaxed">
-            *Transportation and Accommodation costs may apply for outstation locations. A booking fee of 20,000 LKR is required to secure your date. For full pricing and customized requirements, please <button onClick={() => setCurrentPage('Contact')} className="text-[#B3907A] font-bold hover:underline transition-all">contact us</button> directly.
+            *Transportation and Accommodation costs may apply for outstation locations[cite: 144, 145, 146, 147]. A booking fee of 20,000 LKR is required to secure your date[cite: 132]. Please <button onClick={() => setCurrentPage('Contact')} className="text-[#B3907A] font-bold hover:underline transition-all">contact us</button> for full availability.
           </p>
         </div>
 
@@ -197,20 +174,15 @@ const PricingSection = ({ setCurrentPage }) => {
       {/* Tailwind Utilities for Scrollbar hiding & Animations */}
       <style>{`
         /* Hide scrollbar for Chrome, Safari and Opera */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
         /* Hide scrollbar for IE, Edge and Firefox */
-        .scrollbar-hide {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(15px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in {
+        .animate-fade-in > div {
           opacity: 0; /* Starts hidden */
           animation: fadeIn 0.5s ease-out forwards;
         }
