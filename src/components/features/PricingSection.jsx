@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 
-// Packages synthesized from the Beyond & Forever Price Guide
+// Packages synthesized from the Beyond & Forever 2026/2027 Price Guide
 const PRICING_DATA = {
   "One Day Wedding": [
     { 
@@ -82,40 +82,56 @@ const PricingSection = ({ setCurrentPage }) => {
   const [activeTab, setActiveTab] = useState("One Day Wedding");
 
   return (
-    /* REMOVED overflow-hidden which was breaking mobile touch screens */
-    <section className="py-24 md:py-32 bg-[#F5F5EB] font-sans">
-      <div className="max-w-[1400px] mx-auto px-5 md:px-6">
+    <section className="py-20 md:py-32 bg-[#F5F5EB] font-sans">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6">
         
         {/* --- SECTION HEADER --- */}
         <div className="text-center max-w-2xl mx-auto mb-10 md:mb-16">
            <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em] block mb-4">Investment</span>
            <h2 className="font-serif text-4xl md:text-5xl text-[#3a3a3a] mb-6">The Collections</h2>
            <p className="text-[#3a3a3a]/60 font-light leading-relaxed text-sm md:text-base">
-             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision.
+             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision [cite: 5-23, 24-57, 58-77, 78-128].
            </p>
         </div>
 
-        {/* --- CLICKABLE TABS: 2x2 Grid on Mobile, Row on Desktop --- */}
-        <div className="mb-10 md:mb-16">
-          <div className="grid grid-cols-2 gap-3 md:flex md:flex-wrap md:justify-center md:gap-4 max-w-[400px] md:max-w-none mx-auto">
-            {Object.keys(PRICING_DATA).map((category) => (
-              <button
-                key={category}
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault(); // Prevents any weird mobile tap jumping
-                  setActiveTab(category);
-                }}
-                className={`w-full py-4 px-2 md:px-8 md:py-3.5 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-widest transition-colors duration-200 text-center cursor-pointer ${
-                  activeTab === category
-                    ? 'bg-[#3a3a3a] text-white border border-[#3a3a3a]' 
-                    : 'bg-white border border-gray-200 text-gray-500 hover:text-[#3a3a3a] hover:bg-gray-50'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
+        {/* ========================================= */}
+        {/* 1. MOBILE VIEW: NATIVE IOS DROPDOWN       */}
+        {/* ========================================= */}
+        <div className="md:hidden w-full mb-10 px-2">
+          <div className="relative w-full">
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              className="w-full appearance-none bg-[#3a3a3a] text-white py-4 pl-6 pr-12 rounded-[2rem] font-bold uppercase tracking-[0.15em] text-[11px] outline-none shadow-lg border border-[#3a3a3a] cursor-pointer"
+            >
+              {Object.keys(PRICING_DATA).map((category) => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+            {/* Custom Arrow Icon for the Dropdown */}
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-white">
+              <ChevronDown size={18} strokeWidth={2.5} />
+            </div>
           </div>
+        </div>
+
+        {/* ========================================= */}
+        {/* 2. DESKTOP VIEW: HORIZONTAL PILL TABS     */}
+        {/* ========================================= */}
+        <div className="hidden md:flex md:flex-wrap md:justify-center gap-4 max-w-none mx-auto mb-16">
+          {Object.keys(PRICING_DATA).map((category) => (
+            <button
+              key={category}
+              onClick={() => setActiveTab(category)}
+              className={`px-8 py-3.5 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 outline-none cursor-pointer text-center ${
+                activeTab === category
+                  ? 'bg-[#3a3a3a] text-white shadow-md border border-[#3a3a3a]' 
+                  : 'bg-white border border-gray-200 text-gray-500 hover:text-[#3a3a3a] hover:bg-gray-50'
+              }`}
+            >
+              {category}
+            </button>
+          ))}
         </div>
 
         {/* --- CARD GRID LAYOUT --- */}
@@ -124,7 +140,7 @@ const PricingSection = ({ setCurrentPage }) => {
              return (
                <div 
                  key={idx} 
-                 className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-black/5 flex flex-col h-full transition-transform duration-300 hover:-translate-y-1 animate-fade-in"
+                 className="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-black/5 flex flex-col h-full transition-all duration-300 hover:shadow-lg animate-fade-in"
                >
                    {/* Card Header */}
                    <div className="text-center mb-6">
@@ -133,7 +149,7 @@ const PricingSection = ({ setCurrentPage }) => {
                    </div>
 
                    {/* Divider line */}
-                   <div className="w-full h-px bg-gray-100 mb-8"></div>
+                   <hr className="w-full border-t border-gray-100 mb-8" />
 
                    {/* Features List */}
                    <ul className="flex flex-col gap-4 mb-10 flex-grow">
@@ -149,7 +165,7 @@ const PricingSection = ({ setCurrentPage }) => {
                    <button 
                      type="button"
                      onClick={() => setCurrentPage('Contact')}
-                     className="w-full bg-[#B3907A]/90 hover:bg-[#B3907A] text-white rounded-xl py-4 md:py-5 text-[11px] font-bold uppercase tracking-widest transition-colors duration-300 mt-auto cursor-pointer"
+                     className="w-full bg-[#B3907A]/90 hover:bg-[#B3907A] text-white rounded-xl py-4 md:py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-widest transition-colors duration-300 mt-auto select-none active:scale-95 cursor-pointer"
                    >
                      Inquire for Details
                    </button>
@@ -167,9 +183,10 @@ const PricingSection = ({ setCurrentPage }) => {
 
       </div>
 
+      {/* Tailwind Utilities for Animations */}
       <style>{`
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
+          from { opacity: 0; transform: translateY(15px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
