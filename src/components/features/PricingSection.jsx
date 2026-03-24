@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 
-// Packages synthesized from the Beyond & Forever 2026/2027 Price Guide
+// Packages synthesized from the Beyond & Forever Price Guide
 const PRICING_DATA = {
   "One Day Wedding": [
     { 
@@ -80,9 +80,10 @@ const PRICING_DATA = {
 
 const PricingSection = ({ setCurrentPage }) => {
   const [activeTab, setActiveTab] = useState("One Day Wedding");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
-    <section className="py-20 md:py-32 bg-[#F5F5EB] font-sans">
+    <section className="py-20 md:py-32 bg-[#F5F5EB] font-sans relative">
       <div className="max-w-[1400px] mx-auto px-4 md:px-6">
         
         {/* --- SECTION HEADER --- */}
@@ -95,24 +96,39 @@ const PricingSection = ({ setCurrentPage }) => {
         </div>
 
         {/* ========================================= */}
-        {/* 1. MOBILE VIEW: NATIVE IOS DROPDOWN       */}
+        {/* 1. MOBILE VIEW: CUSTOM REACT DROPDOWN     */}
         {/* ========================================= */}
-        <div className="md:hidden w-full mb-10 px-2">
-          <div className="relative w-full">
-            <select
-              value={activeTab}
-              onChange={(e) => setActiveTab(e.target.value)}
-              className="w-full appearance-none bg-[#3a3a3a] text-white py-4 pl-6 pr-12 rounded-[2rem] font-bold uppercase tracking-[0.15em] text-[11px] outline-none shadow-lg border border-[#3a3a3a] cursor-pointer"
-            >
+        <div className="md:hidden relative w-full mb-10 z-[60]">
+          {/* The Main Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="w-full flex justify-between items-center bg-[#3a3a3a] text-white py-5 px-6 rounded-2xl font-bold uppercase tracking-[0.15em] text-[11px] shadow-lg outline-none active:scale-[0.98] transition-all"
+          >
+            <span>{activeTab}</span>
+            <ChevronDown size={18} className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {/* The Dropdown Menu List */}
+          {isDropdownOpen && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col z-[70] animate-fade-in">
               {Object.keys(PRICING_DATA).map((category) => (
-                <option key={category} value={category}>{category}</option>
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(category);
+                    setIsDropdownOpen(false); // Closes menu after selection
+                  }}
+                  className={`w-full text-left px-6 py-5 font-bold uppercase tracking-widest text-[10px] border-b border-gray-50 last:border-0 transition-colors ${
+                    activeTab === category ? 'bg-[#F5F5EB] text-[#B3907A]' : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {category}
+                </button>
               ))}
-            </select>
-            {/* Custom Arrow Icon for the Dropdown */}
-            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-white">
-              <ChevronDown size={18} strokeWidth={2.5} />
             </div>
-          </div>
+          )}
         </div>
 
         {/* ========================================= */}
@@ -135,7 +151,7 @@ const PricingSection = ({ setCurrentPage }) => {
         </div>
 
         {/* --- CARD GRID LAYOUT --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6 lg:gap-8 relative z-10">
            {PRICING_DATA[activeTab].map((pkg, idx) => {
              return (
                <div 
@@ -175,7 +191,7 @@ const PricingSection = ({ setCurrentPage }) => {
         </div>
 
         {/* --- FOOTNOTE --- */}
-        <div className="text-center mt-16 max-w-3xl mx-auto px-4">
+        <div className="text-center mt-16 max-w-3xl mx-auto px-4 relative z-10">
           <p className="text-gray-500 text-xs md:text-sm font-light leading-relaxed">
             *Transportation and Accommodation costs may apply for outstation locations. A booking fee of 20,000 LKR is required to secure your date. Please <button type="button" onClick={() => setCurrentPage('Contact')} className="text-[#B3907A] font-bold hover:underline transition-all">contact us</button> for full availability.
           </p>
@@ -186,11 +202,11 @@ const PricingSection = ({ setCurrentPage }) => {
       {/* Tailwind Utilities for Animations */}
       <style>{`
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(15px); }
+          from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-          animation: fadeIn 0.4s ease-out forwards;
+          animation: fadeIn 0.3s ease-out forwards;
         }
       `}</style>
     </section>
