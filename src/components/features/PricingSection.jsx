@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Check } from 'lucide-react';
 
-// Packages synthesized from the Beyond & Forever 2026/2027 Price Guide (Prices Removed)
+// Packages synthesized from the Beyond & Forever 2026/2027 Price Guide
 const PRICING_DATA = {
   "One Day Wedding": [
     { 
@@ -90,33 +90,40 @@ const PricingSection = ({ setCurrentPage }) => {
            <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em] block mb-4">Investment</span>
            <h2 className="font-serif text-4xl md:text-5xl text-[#3a3a3a] mb-6">The Collections</h2>
            <p className="text-[#3a3a3a]/60 font-light leading-relaxed text-sm md:text-base">
-             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision.
+             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision [cite: 5-23, 24-57, 58-77, 78-128].
            </p>
         </div>
 
         {/* --- BULLETPROOF MOBILE TABS --- */}
         <div className="w-full mb-10 md:mb-16">
-          <div className="md:hidden flex justify-center mb-3">
-            <span className="text-[#B3907A]/70 text-[9px] uppercase tracking-widest font-bold animate-pulse">Swipe to explore packages &rarr;</span>
+          <div className="md:hidden flex justify-center mb-4">
+            <span className="text-[#B3907A]/80 text-[9px] uppercase tracking-widest font-bold animate-pulse">Swipe to explore packages &rarr;</span>
           </div>
           
-          {/* This container explicitly allows horizontal scrolling on mobile */}
-          <div className="w-full overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <div className="flex flex-nowrap md:flex-wrap md:justify-center gap-3 pb-4 w-max md:w-auto mx-auto snap-x">
-              {Object.keys(PRICING_DATA).map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveTab(category)}
-                  className={`flex-shrink-0 snap-center px-7 md:px-8 py-3.5 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 outline-none whitespace-nowrap cursor-pointer ${
-                    activeTab === category
-                      ? 'bg-[#3a3a3a] text-white shadow-md border border-[#3a3a3a]' 
-                      : 'bg-white border border-[#3a3a3a]/10 text-[#3a3a3a]/60 hover:text-[#3a3a3a] hover:shadow-sm'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
+          {/* Flattened track: No nested centering on mobile, pure horizontal scrolling */}
+          <div 
+            className="flex overflow-x-auto md:flex-wrap md:justify-center gap-3 pb-4 scrollbar-hide snap-x" 
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
+            {/* Left invisible spacer to prevent clipping on mobile */}
+            <div className="w-1 md:hidden flex-shrink-0"></div>
+
+            {Object.keys(PRICING_DATA).map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveTab(category)}
+                className={`flex-shrink-0 snap-center px-7 md:px-8 py-3.5 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 outline-none whitespace-nowrap cursor-pointer ${
+                  activeTab === category
+                    ? 'bg-[#3a3a3a] text-white shadow-md border border-[#3a3a3a]' 
+                    : 'bg-white border border-[#3a3a3a]/10 text-[#3a3a3a]/60 hover:text-[#3a3a3a] hover:shadow-sm'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+
+            {/* Right invisible spacer to prevent clipping on mobile */}
+            <div className="w-1 md:hidden flex-shrink-0"></div>
           </div>
         </div>
 
@@ -135,7 +142,7 @@ const PricingSection = ({ setCurrentPage }) => {
                      <p className="text-[#3a3a3a]/50 text-sm font-light leading-relaxed min-h-[40px]">{pkg.desc}</p>
                    </div>
 
-                   {/* Divider line exactly like your image */}
+                   {/* Divider line */}
                    <hr className="w-full border-t border-[#3a3a3a]/10 mb-8" />
 
                    {/* Features List */}
