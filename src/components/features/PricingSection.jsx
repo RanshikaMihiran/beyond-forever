@@ -90,23 +90,25 @@ const PricingSection = ({ setCurrentPage }) => {
            <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em] block mb-4">Investment</span>
            <h2 className="font-serif text-4xl md:text-5xl text-[#3a3a3a] mb-6">The Collections</h2>
            <p className="text-[#3a3a3a]/60 font-light leading-relaxed text-sm md:text-base">
-             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision [cite: 5-23, 24-57, 58-77, 78-128].
+             Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision.
            </p>
         </div>
 
-        {/* --- CLICKABLE TABS: relative z-50 prevents invisible blocking --- */}
-        <div className="relative z-50 w-full mb-10 md:mb-16 pointer-events-auto">
-          <div className="grid grid-cols-2 md:flex md:flex-wrap md:justify-center gap-3 md:gap-4 max-w-[360px] md:max-w-none mx-auto">
+        {/* --- BULLETPROOF TABS --- 
+            FIX: Added 'relative z-50 pointer-events-auto' so nothing can overlap and block the buttons on mobile 
+        */}
+        <div className="relative z-50 pointer-events-auto w-full mb-10 md:mb-16">
+          <div className="grid grid-cols-2 md:flex md:flex-wrap md:justify-center gap-2 md:gap-4 max-w-sm md:max-w-none mx-auto">
             {Object.keys(PRICING_DATA).map((category) => (
               <button
                 key={category}
-                type="button" // Ensures the browser treats it as a button
+                type="button" /* FIX: Explicitly tell mobile browsers this is a button */
                 onClick={() => setActiveTab(category)}
-                /* touch-manipulation stops mobile delay, z-50 forces it to the top */
-                className={`relative z-50 w-full px-1 py-4 md:px-8 md:py-3.5 rounded-[2rem] text-[9px] md:text-[11px] font-bold uppercase tracking-widest transition-all duration-300 outline-none cursor-pointer text-center touch-manipulation ${
+                /* FIX: Added touch-manipulation to stop mobile 300ms tap delays */
+                className={`touch-manipulation px-2 py-4 md:px-8 md:py-3.5 rounded-full text-[9px] md:text-[11px] font-bold uppercase tracking-[0.1em] md:tracking-[0.15em] transition-all duration-300 outline-none cursor-pointer text-center ${
                   activeTab === category
                     ? 'bg-[#3a3a3a] text-white shadow-md border border-[#3a3a3a]' 
-                    : 'bg-white border border-gray-200 text-gray-500 hover:text-[#3a3a3a] hover:bg-gray-50'
+                    : 'bg-white border border-[#3a3a3a]/10 text-[#3a3a3a]/60 hover:text-[#3a3a3a] hover:shadow-sm'
                 }`}
               >
                 {category}
@@ -115,8 +117,10 @@ const PricingSection = ({ setCurrentPage }) => {
           </div>
         </div>
 
-        {/* --- CARD GRID LAYOUT --- */}
-        <div key={activeTab} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6 lg:gap-8 animate-fade-in relative z-10">
+        {/* --- CARD GRID LAYOUT --- 
+            FIX: Added 'relative z-10' to keep cards underneath the tabs 
+        */}
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6 lg:gap-8 animate-fade-in">
            {PRICING_DATA[activeTab].map((pkg, idx) => {
              return (
                <div 
@@ -130,13 +134,13 @@ const PricingSection = ({ setCurrentPage }) => {
                      <p className="text-[#3a3a3a]/50 text-sm font-light leading-relaxed min-h-[40px]">{pkg.desc}</p>
                    </div>
 
-                   {/* Divider line */}
-                   <hr className="w-full border-t border-gray-100 mb-8" />
+                   {/* Divider line exactly like your image */}
+                   <hr className="w-full border-t border-[#3a3a3a]/10 mb-8" />
 
                    {/* Features List */}
                    <ul className="flex flex-col gap-4 mb-10 flex-grow">
                       {pkg.features.map((f, i) => (
-                         <li key={i} className="flex items-start gap-3 text-sm font-light text-gray-600">
+                         <li key={i} className="flex items-start gap-3 text-sm font-light text-[#3a3a3a]/70">
                            <Check size={18} strokeWidth={2} className="text-[#B3907A] mt-0.5 flex-shrink-0" />
                            <span className="leading-relaxed">{f}</span>
                          </li>
@@ -147,7 +151,7 @@ const PricingSection = ({ setCurrentPage }) => {
                    <button 
                      type="button"
                      onClick={() => setCurrentPage('Contact')}
-                     className="w-full bg-[#B3907A]/90 hover:bg-[#B3907A] text-white rounded-xl py-4 md:py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-widest transition-colors duration-300 mt-auto"
+                     className="touch-manipulation relative z-20 w-full bg-[#B3907A]/90 hover:bg-[#B3907A] text-white rounded-xl py-4 md:py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-widest transition-colors duration-300 mt-auto cursor-pointer"
                    >
                      Inquire for Details
                    </button>
@@ -158,8 +162,8 @@ const PricingSection = ({ setCurrentPage }) => {
 
         {/* --- FOOTNOTE --- */}
         <div className="text-center mt-16 max-w-3xl mx-auto px-4 relative z-10">
-          <p className="text-gray-500 text-xs md:text-sm font-light leading-relaxed">
-            *Transportation and Accommodation costs may apply for outstation locations. A booking fee of 20,000 LKR is required to secure your date. Please <button type="button" onClick={() => setCurrentPage('Contact')} className="text-[#B3907A] font-bold hover:underline transition-all">contact us</button> for full availability[cite: 132, 144, 145].
+          <p className="text-[#3a3a3a]/50 text-xs md:text-sm font-light leading-relaxed">
+            *Transportation and Accommodation costs may apply for outstation locations. A booking fee of 20,000 LKR is required to secure your date. Please <button onClick={() => setCurrentPage('Contact')} className="text-[#B3907A] font-bold hover:underline transition-all">contact us</button> for full availability.
           </p>
         </div>
 
