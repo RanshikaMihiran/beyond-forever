@@ -17,17 +17,15 @@ const Navbar = () => {
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
-      // 1. Determine if we are at the top
+      // Determine if we are at the top
       setIsScrolled(currentScrollY > 50);
 
-      // 2. Determine scroll direction
+      // Determine scroll direction
       if (currentScrollY > lastScrollY && currentScrollY > 150) {
         setIsVisible(false);
       } else {
         setIsVisible(true);
       }
-
       lastScrollY = currentScrollY;
     };
 
@@ -75,7 +73,6 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                /* FIX: Explicitly added hover:text-white and hover:text-[#B3907A] to kill the blue color */
                 className={`px-5 py-2.5 rounded-[2rem] text-[10px] lg:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 ${
                   isActive 
                     ? (isScrolled ? 'bg-[#3a3a3a]/5 text-[#B3907A]' : 'bg-white/20 text-white border border-white/20 backdrop-blur-sm') 
