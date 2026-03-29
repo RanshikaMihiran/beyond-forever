@@ -5,13 +5,13 @@ import { Camera, Heart, Globe, Award, Star } from 'lucide-react';
 const STATS = [
   { 
     label: "Weddings", 
-    value: "500+", 
+    value: "45+", 
     desc: "Stories Captured",
     icon: <Camera strokeWidth={1} /> 
   },
   { 
     label: "Couples", 
-    value: "950+", 
+    value: "140+", 
     desc: "Trusting Us",
     icon: <Heart strokeWidth={1} /> 
   },
@@ -23,7 +23,7 @@ const STATS = [
   },
   { 
     label: "Awards", 
-    value: "15", 
+    value: "5", 
     desc: "Industry Recognition",
     icon: <Award strokeWidth={1} /> 
   }

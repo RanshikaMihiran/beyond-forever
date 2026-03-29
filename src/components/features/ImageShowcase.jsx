@@ -20,14 +20,22 @@ export const PORTFOLIO_ITEMS = [
   },
   { 
     id: 2, 
-    title: "The Golden Hour", 
+    title: "Naveesha & Hohan", 
     category: "Editorial Campaign", 
     year: "2025",
-    src: "https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2000&auto=format&fit=crop",
+    src: "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/SHA05664.webp?updatedAt=1774605741741",
     gallery: [
-      "https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2000&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2000&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2000&auto=format&fit=crop",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/6.webp?updatedAt=1774605738110",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/SHA05744.webp?updatedAt=1774605726905",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/SHA05744.webp?updatedAt=1774605726905",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/SHA05883.webp?updatedAt=1774605688417",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/12.webp?updatedAt=1774605683815",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/SHA05827.webp?updatedAt=1774605670183",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/SHA05827.webp?updatedAt=1774605670183",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/SHA05945.webp?updatedAt=1774605651663",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/SHA05904.webp?updatedAt=1774605634712",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/13.webp?updatedAt=1774605605040",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/naveesha-and-yohan/14.webp?updatedAt=1774605600082"
     ]
   },
   { 
