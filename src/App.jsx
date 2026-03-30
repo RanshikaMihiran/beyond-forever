@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 // Import Components
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import ChatWidget from './components/features/ChatWidget';
+import WhatsAppWidget from './components/features/WhatsAppWidget'; // <--- Updated Import
 
 // Import Pages
 import HomePage from './pages/HomePage';
@@ -29,7 +29,8 @@ const App = () => {
       <ScrollToTop />
       <div className="bg-[#F5F5EB] min-h-screen font-sans text-[#3a3a3a] selection:bg-[#B3907A] selection:text-white">
         
-        <ChatWidget />
+        {/* Floating elements and Layout */}
+        <WhatsAppWidget /> {/* <--- Placed globally so it appears on all pages */}
         <Navbar />
         
         <main>
