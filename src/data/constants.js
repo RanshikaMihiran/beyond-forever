@@ -8,14 +8,21 @@ export const HOME_HERO_IMAGES = [
   // "/images/hero/Image 2.jpg",
   // "/images/hero/Image 3.jpg",
   // "/images/hero/Image 4.jpg",
-  "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Pre-2/SHA09127.webp?updatedAt=1772638960495",
-  "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Pre-2/SHA08790.webp?updatedAt=1772638977261",
-  "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Night-Wedding%20/SHA02855.webp?updatedAt=1772638178985",
-  "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Cover-Images/DSC00818.webp?updatedAt=1772205156455",
-  "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Night-Wedding%20/5.webp?updatedAt=1772638161356",
-  "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Preshoot/2.webp?updatedAt=1772645003741",
-  "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Pre-2/SHA09127.webp?updatedAt=1772638960495",
-  "/images/hero/Image 5.jpg"
+  // "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Pre-2/SHA09127.webp?updatedAt=1772638960495",
+  // "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Pre-2/SHA08790.webp?updatedAt=1772638977261",
+  // "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Night-Wedding%20/SHA02855.webp?updatedAt=1772638178985",
+  // "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Cover-Images/DSC00818.webp?updatedAt=1772205156455",
+  // "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Night-Wedding%20/5.webp?updatedAt=1772638161356",
+  // "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/Preshoot/2.webp?updatedAt=1772645003741",
+  "/images/hero/Image 1.jpg",
+  "/images/hero/Image 2.jpg",
+  "/images/hero/Image 3.jpg",
+  "/images/hero/Image 4.jpg",
+  "/images/hero/Image 5.jpg",
+  "/images/hero/Image 6.jpg",
+  "/images/hero/Image 7.jpg",
+  "/images/hero/Image 8.jpg"
+  
 ];
 
 export const ABOUT_HERO_IMAGES = [

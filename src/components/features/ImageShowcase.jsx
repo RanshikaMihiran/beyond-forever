@@ -40,13 +40,27 @@ export const PORTFOLIO_ITEMS = [
   },
   { 
     id: 3, 
-    title: "Midnight in Paris", 
+    title: "A & B", 
     category: "Destination Wedding", 
     year: "2024",
-    src: "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=2000&auto=format&fit=crop",
+    src: "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/18.webp?updatedAt=1775059537427",
     gallery: [
-      "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=2000&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=2000&auto=format&fit=crop",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/17.jpg.webp?updatedAt=1775059545995",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/16.jpg.webp?updatedAt=1775059545198",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/18.webp?updatedAt=1775059537427",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/E.webp?updatedAt=1775059537144",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/09.jpg.webp?updatedAt=1775059529453",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/02.jpg(1).webp?updatedAt=1775059521372",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/SHA07864.webp?updatedAt=1775059519153",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/25.jpg.webp?updatedAt=1775059515623",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/SHA07886.webp?updatedAt=1775059508884",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/SHA07886.webp?updatedAt=1775059508884",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/SHA08134.webp?updatedAt=1775059500412",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/SHA08134.webp?updatedAt=1775059500412",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/26.jpg.webp?updatedAt=1775059478262",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/SHA07875.webp?updatedAt=1775059450862",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/SHA07931.webp?updatedAt=1775059446003",
+      "https://ik.imagekit.io/vaibbbrnqt/beyond-forever/shoot-01/22.webp?updatedAt=1775059444092"
     ]
   },
   { 
