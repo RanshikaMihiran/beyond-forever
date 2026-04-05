@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ChevronRight } from 'lucide-react';
 
 export const PORTFOLIO_ITEMS = [
   { 
@@ -105,13 +105,13 @@ const ImageShowcase = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="bg-white py-24 px-6 md:px-12 lg:px-24 border-t border-[#1a1a1a]/5">
+    <section className="bg-white py-20 md:py-24 px-6 md:px-12 lg:px-24 border-t border-[#1a1a1a]/5 overflow-hidden">
       <div className="max-w-[1600px] mx-auto">
         
         {/* --- HEADER --- */}
-        <div className="flex justify-between items-end mb-12 md:mb-24 md:border-b border-[#1a1a1a]/10 md:pb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-24 md:border-b border-[#1a1a1a]/10 md:pb-8 gap-4 md:gap-0">
            <div>
-              <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em] block mb-3">
+              <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em] block mb-2 md:mb-3">
                  Selected Works
               </span>
               <h2 className="font-serif text-4xl md:text-6xl text-[#1a1a1a] leading-none">
@@ -128,39 +128,48 @@ const ImageShowcase = () => {
                 <ArrowRight size={12} />
              </div>
            </button>
+
+           {/* Mobile Swipe Hint */}
+           <div className="md:hidden flex items-center gap-1 opacity-50 mt-2">
+             <span className="text-[9px] uppercase tracking-widest">Swipe to explore</span>
+             <ChevronRight size={12} />
+           </div>
         </div>
 
-        {/* --- MOBILE: EDITORIAL CARDS --- */}
-        <div className="flex flex-col gap-6 lg:hidden">
+        {/* ========================================================= */}
+        {/* --- MOBILE: SLEEK HORIZONTAL SNAP-SCROLL GALLERY      --- */}
+        {/* ========================================================= */}
+        <div className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-4 lg:hidden pb-10 -mx-6 px-6 scrollbar-hide">
           {PORTFOLIO_ITEMS.map((item) => (
             <div 
               key={item.id}
               onClick={() => navigate(`/portfolio/${item.id}`)}
-              className="relative w-full h-[450px] rounded-[2rem] overflow-hidden shadow-lg cursor-pointer group"
+              className="flex-none w-[85vw] max-w-[320px] h-[55vh] min-h-[400px] snap-center relative rounded-[2rem] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] cursor-pointer group active:scale-[0.98] transition-transform duration-300"
             >
               <img 
                 src={item.src} 
                 alt={item.title} 
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-300 group-hover:opacity-80"></div>
+              {/* Smooth Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity duration-300 group-active:opacity-80"></div>
               
-              <div className="absolute inset-0 p-8 flex flex-col justify-end z-10">
-                <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-widest mb-2 drop-shadow-md">
+              <div className="absolute inset-0 p-6 flex flex-col justify-end z-10">
+                <span className="text-[#B3907A] text-[9px] font-bold uppercase tracking-[0.2em] mb-2 drop-shadow-md">
                   {item.category} &mdash; {item.year}
                 </span>
-                <h3 className="font-serif text-4xl text-white mb-4 drop-shadow-lg leading-tight">
+                <h3 className="font-serif text-3xl text-white mb-3 drop-shadow-lg leading-tight">
                   {item.title}
                 </h3>
-                <div className="flex items-center gap-2 text-white/90 text-[10px] uppercase tracking-widest font-bold group-hover:text-[#B3907A] transition-colors">
-                  View Gallery <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                <div className="flex items-center gap-2 text-white/80 text-[10px] uppercase tracking-widest font-bold group-active:text-[#B3907A] transition-colors">
+                  View Story <ArrowRight size={14} className="group-active:translate-x-1 transition-transform" />
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* --- DESKTOP: INTERACTIVE SPLIT LAYOUT --- */}
+        {/* --- DESKTOP: INTERACTIVE SPLIT LAYOUT (UNCHANGED) --- */}
         <div className="hidden lg:flex flex-row gap-24">
            {/* LEFT: THE LIST */}
            <div className="flex-1 flex flex-col justify-center">
@@ -220,16 +229,22 @@ const ImageShowcase = () => {
         </div>
 
         {/* MOBILE BOTTOM BUTTON */}
-        <div className="mt-12 text-center lg:hidden">
+        <div className="mt-4 text-center lg:hidden">
             <button 
               onClick={() => navigate('/portfolio')}
-              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#B3907A] border-b border-[#B3907A]/30 pb-1 hover:text-[#1a1a1a] hover:border-[#1a1a1a] transition-colors"
+              className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#B3907A] border-b border-[#B3907A]/30 pb-1 active:text-[#1a1a1a] active:border-[#1a1a1a] transition-colors"
             >
               View Full Portfolio <ArrowRight size={12} />
             </button>
         </div>
 
       </div>
+
+      {/* Inline styles to hide scrollbar specifically for the horizontal gallery container */}
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </section>
   );
 };
