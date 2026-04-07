@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronRight } from 'lucide-react';
 
 // Packages synthesized from the Beyond & Forever Price Guide
 const PRICING_DATA = {
@@ -80,66 +80,31 @@ const PRICING_DATA = {
 
 const PricingSection = ({ setCurrentPage }) => {
   const [activeTab, setActiveTab] = useState("One Day Wedding");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
-    <section className="py-20 md:py-32 bg-[#F5F5EB] font-sans relative">
-      <div className="max-w-[1400px] mx-auto px-4 md:px-6">
+    <section className="py-20 md:py-32 bg-[#F5F5EB] font-sans relative overflow-hidden">
+      <div className="max-w-[1400px] mx-auto px-0 md:px-6">
         
         {/* --- SECTION HEADER --- */}
-        <div className="text-center max-w-2xl mx-auto mb-10 md:mb-16">
-           <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em] block mb-4">Investment</span>
-           <h2 className="font-serif text-4xl md:text-5xl text-[#3a3a3a] mb-6">The Collections</h2>
+        <div className="text-center max-w-2xl mx-auto mb-10 md:mb-16 px-6">
+           <span className="text-[#B3907A] text-[10px] font-bold uppercase tracking-[0.3em] block mb-3 md:mb-4">Investment</span>
+           <h2 className="font-serif text-4xl md:text-5xl text-[#3a3a3a] mb-4 md:mb-6">The Collections</h2>
            <p className="text-[#3a3a3a]/60 font-light leading-relaxed text-sm md:text-base">
              Curated collections designed to preserve your memories beautifully. We offer transparent, comprehensive packages tailored to your vision.
            </p>
         </div>
 
-        {/* ========================================= */}
-        {/* 1. MOBILE VIEW: CUSTOM REACT DROPDOWN     */}
-        {/* ========================================= */}
-        <div className="md:hidden relative w-full mb-10 z-[60]">
-          {/* The Main Toggle Button */}
-          <button
-            type="button"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="w-full flex justify-between items-center bg-[#3a3a3a] text-white py-5 px-6 rounded-2xl font-bold uppercase tracking-[0.15em] text-[11px] shadow-lg outline-none active:scale-[0.98] transition-all"
-          >
-            <span>{activeTab}</span>
-            <ChevronDown size={18} className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-          </button>
-
-          {/* The Dropdown Menu List */}
-          {isDropdownOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col z-[70] animate-fade-in">
-              {Object.keys(PRICING_DATA).map((category) => (
-                <button
-                  key={category}
-                  type="button"
-                  onClick={() => {
-                    setActiveTab(category);
-                    setIsDropdownOpen(false); // Closes menu after selection
-                  }}
-                  className={`w-full text-left px-6 py-5 font-bold uppercase tracking-widest text-[10px] border-b border-gray-50 last:border-0 transition-colors ${
-                    activeTab === category ? 'bg-[#F5F5EB] text-[#B3907A]' : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* ========================================= */}
-        {/* 2. DESKTOP VIEW: HORIZONTAL PILL TABS     */}
-        {/* ========================================= */}
-        <div className="hidden md:flex md:flex-wrap md:justify-center gap-4 max-w-none mx-auto mb-16">
+        {/* ======================================================= */}
+        {/* 1. UNIFIED TABS (Swipeable on Mobile, Centered on Desk) */}
+        {/* ======================================================= */}
+        {/* MOBILE FIX: Dropped the clunky dropdown for an elegant horizontal scrolling tab bar */}
+        <div className="flex overflow-x-auto snap-x touch-pan-x scrollbar-hide gap-3 md:gap-4 md:flex-wrap md:justify-center max-w-none mx-auto mb-10 md:mb-16 px-6 md:px-0">
           {Object.keys(PRICING_DATA).map((category) => (
             <button
               key={category}
               onClick={() => setActiveTab(category)}
-              className={`px-8 py-3.5 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 outline-none cursor-pointer text-center ${
+              /* MOBILE FIX: Added whitespace-nowrap and flex-shrink-0 so tabs scroll smoothly */
+              className={`whitespace-nowrap flex-shrink-0 snap-center px-6 md:px-8 py-3.5 rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 outline-none cursor-pointer text-center active:scale-95 ${
                 activeTab === category
                   ? 'bg-[#3a3a3a] text-white shadow-md border border-[#3a3a3a]' 
                   : 'bg-white border border-gray-200 text-gray-500 hover:text-[#3a3a3a] hover:bg-gray-50'
@@ -150,63 +115,77 @@ const PricingSection = ({ setCurrentPage }) => {
           ))}
         </div>
 
-        {/* --- CARD GRID LAYOUT --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6 lg:gap-8 relative z-10">
-           {PRICING_DATA[activeTab].map((pkg, idx) => {
-             return (
-               <div 
-                 key={idx} 
-                 className="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-black/5 flex flex-col h-full transition-all duration-300 hover:shadow-lg animate-fade-in"
-               >
-                   {/* Card Header */}
-                   <div className="text-center mb-6">
-                     <h3 className="font-serif text-3xl md:text-4xl text-[#3a3a3a] mb-4">{pkg.title}</h3>
-                     <p className="text-[#3a3a3a]/50 text-sm font-light leading-relaxed min-h-[40px]">{pkg.desc}</p>
-                   </div>
+        {/* ======================================================= */}
+        {/* 2. CARD LAYOUT (Horizontal Snap on Mobile, Grid Desktop)*/}
+        {/* ======================================================= */}
+        <div className="relative">
+          <div className="flex overflow-x-auto snap-x snap-mandatory touch-pan-x scrollbar-hide gap-4 md:gap-6 lg:gap-8 px-6 md:px-0 pb-8 md:pb-0 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] z-10">
+             {PRICING_DATA[activeTab].map((pkg, idx) => {
+               return (
+                 <div 
+                   key={`${activeTab}-${idx}`} // Force re-render animation when tab changes
+                   /* MOBILE FIX: Switched from a stacked grid to w-[85vw] horizontal scrolling cards */
+                   className="w-[85vw] max-w-[340px] md:w-auto flex-shrink-0 snap-center bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-black/5 flex flex-col h-auto transition-all duration-300 hover:shadow-xl animate-fade-in"
+                 >
+                     {/* Card Header */}
+                     <div className="text-center mb-6">
+                       <h3 className="font-serif text-3xl md:text-4xl text-[#3a3a3a] mb-3 md:mb-4">{pkg.title}</h3>
+                       <p className="text-[#3a3a3a]/50 text-xs md:text-sm font-light leading-relaxed min-h-[40px]">{pkg.desc}</p>
+                     </div>
 
-                   {/* Divider line */}
-                   <hr className="w-full border-t border-gray-100 mb-8" />
+                     {/* Divider line */}
+                     <hr className="w-full border-t border-gray-100 mb-6 md:mb-8" />
 
-                   {/* Features List */}
-                   <ul className="flex flex-col gap-4 mb-10 flex-grow">
-                      {pkg.features.map((f, i) => (
-                         <li key={i} className="flex items-start gap-3 text-sm font-light text-gray-600">
-                           <Check size={18} strokeWidth={2} className="text-[#B3907A] mt-0.5 flex-shrink-0" />
-                           <span className="leading-relaxed">{f}</span>
-                         </li>
-                      ))}
-                   </ul>
+                     {/* Features List */}
+                     <ul className="flex flex-col gap-4 mb-8 flex-grow">
+                        {pkg.features.map((f, i) => (
+                           <li key={i} className="flex items-start gap-3 text-[13px] md:text-sm font-light text-gray-600">
+                             <Check size={16} strokeWidth={2} className="text-[#B3907A] mt-0.5 flex-shrink-0" />
+                             <span className="leading-relaxed">{f}</span>
+                           </li>
+                        ))}
+                     </ul>
 
-                   {/* Action Button */}
-                   <button 
-                     type="button"
-                     onClick={() => setCurrentPage('Contact')}
-                     className="w-full bg-[#B3907A]/90 hover:bg-[#B3907A] text-white rounded-xl py-4 md:py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-widest transition-colors duration-300 mt-auto select-none active:scale-95 cursor-pointer"
-                   >
-                     Inquire for Details
-                   </button>
-               </div>
-             );
-           })}
+                     {/* Action Button */}
+                     <button 
+                       type="button"
+                       onClick={() => setCurrentPage('Contact')}
+                       className="w-full bg-[#B3907A]/90 hover:bg-[#B3907A] text-white rounded-xl py-4 md:py-5 text-[10px] md:text-[11px] font-bold uppercase tracking-widest transition-colors duration-300 mt-auto select-none active:scale-95 cursor-pointer shadow-md"
+                     >
+                       Inquire for Details
+                     </button>
+                 </div>
+               );
+             })}
+          </div>
+
+          {/* Mobile Swipe Indicator (Only visible on mobile) */}
+          <div className="md:hidden flex items-center justify-center gap-2 text-[#B3907A] text-[9px] uppercase tracking-[0.3em] font-bold mt-2 opacity-60">
+            Swipe packages
+            <ChevronRight size={10} />
+          </div>
         </div>
 
         {/* --- FOOTNOTE --- */}
-        <div className="text-center mt-16 max-w-3xl mx-auto px-4 relative z-10">
-          <p className="text-gray-500 text-xs md:text-sm font-light leading-relaxed">
+        <div className="text-center mt-12 md:mt-16 max-w-3xl mx-auto px-6 relative z-10">
+          <p className="text-gray-500 text-[10px] md:text-xs font-light leading-relaxed">
             *Transportation and Accommodation costs may apply for outstation locations. A booking fee of 20,000 LKR is required to secure your date. Please <button type="button" onClick={() => setCurrentPage('Contact')} className="text-[#B3907A] font-bold hover:underline transition-all">contact us</button> for full availability.
           </p>
         </div>
 
       </div>
 
-      {/* Tailwind Utilities for Animations */}
+      {/* Tailwind Utilities for Animations and hiding Scrollbars */}
       <style>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-          animation: fadeIn 0.3s ease-out forwards;
+          animation: fadeIn 0.4s ease-out forwards;
         }
       `}</style>
     </section>
